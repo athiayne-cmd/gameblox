@@ -1,0 +1,53 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * { box-sizing: border-box; }
+
+  body {
+    @apply bg-gaming-bg text-gaming-text-primary font-body;
+    overflow-x: hidden;
+  }
+
+  ::-webkit-scrollbar       { width: 5px; height: 5px; }
+  ::-webkit-scrollbar-track { @apply bg-gaming-surface; }
+  ::-webkit-scrollbar-thumb { @apply bg-gaming-border rounded-full; }
+  ::-webkit-scrollbar-thumb:hover { @apply bg-gaming-purple; }
+
+  ::selection { background: rgba(139,92,246,0.3); color: #fff; }
+}
+
+@layer components {
+  .glass {
+    @apply bg-gaming-card/70 backdrop-blur-md border border-gaming-border/50;
+  }
+  .glass-dark {
+    @apply bg-gaming-bg/80 backdrop-blur-xl border border-gaming-border/30;
+  }
+  .gradient-text {
+    @apply bg-neon-gradient bg-clip-text text-transparent;
+    background-size: 200% auto;
+    animation: gradientX 5s ease infinite;
+  }
+  .grid-bg {
+    background-image:
+      linear-gradient(rgba(30,58,95,0.25) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(30,58,95,0.25) 1px, transparent 1px);
+    background-size: 48px 48px;
+  }
+  .gaming-card {
+    @apply bg-gaming-card border border-gaming-border rounded-2xl shadow-gaming
+           transition-all duration-300 hover:-translate-y-1 hover:border-gaming-purple/40 hover:shadow-card-hover;
+  }
+  .glow-border   { @apply border border-gaming-purple/50 shadow-purple-glow; }
+  .glow-cyan     { @apply border border-gaming-cyan/50 shadow-cyan-glow; }
+  .neon-text     { text-shadow: 0 0 12px rgba(139,92,246,0.9), 0 0 24px rgba(139,92,246,0.4); }
+  .neon-cyan-text{ text-shadow: 0 0 12px rgba(6,182,212,0.9), 0 0 24px rgba(6,182,212,0.4); }
+  .section-title {
+    @apply font-display font-bold text-3xl md:text-4xl text-gaming-text-primary;
+  }
+  .page-container {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
