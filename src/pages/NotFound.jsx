@@ -12,15 +12,20 @@ export default function NotFound() {
         className="relative z-10 text-center px-4">
         <motion.p
           animate={{ y: [0, -12, 0] }} transition={{ duration: 3, repeat: Infinity }}
-          className="text-7xl mb-6">🎮</motion.p>
+          className="text-7xl mb-6 select-none">🎮</motion.p>
         <h1 className="font-display font-bold text-8xl text-gaming-border mb-4">404</h1>
         <h2 className="font-display font-bold text-2xl text-white mb-3">Game Over !</h2>
-        <p className="text-gaming-text-muted font-body mb-8 max-w-sm mx-auto">
+        <p className="text-gaming-text-muted font-body mb-8 max-w-sm mx-auto leading-relaxed">
           Cette page n'existe pas ou a été supprimée. Retourne au marketplace et continue à explorer !
         </p>
-        <Link to="/">
-          <Button size="lg">Retour à l'accueil</Button>
-        </Link>
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link to="/">
+            <Button size="lg">Retour à l'accueil</Button>
+          </Link>
+          <Link to="/marketplace">
+            <Button size="lg" variant="secondary">Explorer les produits</Button>
+          </Link>
+        </div>
       </motion.div>
     </div>
   )

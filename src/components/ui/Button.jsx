@@ -1,13 +1,37 @@
 import { motion } from 'framer-motion'
 
 const VARIANTS = {
-  primary:  'bg-gaming-purple hover:bg-gaming-purple-dark text-white shadow-purple-glow hover:shadow-purple-glow',
-  secondary:'bg-gaming-card border border-gaming-border hover:border-gaming-purple/50 text-gaming-text-primary hover:text-white',
-  outline:  'bg-transparent border border-gaming-purple/60 hover:bg-gaming-purple/10 text-gaming-purple',
-  cyan:     'bg-gaming-cyan hover:bg-cyan-500 text-gaming-bg shadow-cyan-glow',
-  ghost:    'bg-transparent hover:bg-gaming-card/60 text-gaming-text-secondary hover:text-white',
-  danger:   'bg-gaming-red/10 border border-gaming-red/40 hover:bg-gaming-red/20 text-gaming-red',
-  neon:     'bg-gaming-neon/10 border border-gaming-neon/40 hover:bg-gaming-neon/20 text-gaming-neon',
+  primary: [
+    'relative overflow-hidden text-white font-semibold',
+    'bg-gradient-to-r from-gaming-purple to-gaming-pink',
+    'shadow-btn-glow hover:shadow-btn-glow-lg',
+    'hover:from-gaming-purple-light hover:to-[#ff33d6]',
+    'before:absolute before:inset-0 before:bg-white/0 before:hover:bg-white/[0.07] before:transition-colors before:duration-300',
+  ].join(' '),
+
+  secondary: [
+    'bg-gaming-card border border-gaming-border',
+    'hover:border-gaming-purple/60 hover:bg-gaming-card-hover',
+    'text-gaming-text-primary hover:text-white hover:shadow-purple-glow',
+  ].join(' '),
+
+  outline: [
+    'bg-transparent border border-gaming-purple/60',
+    'hover:bg-gaming-purple/10 hover:border-gaming-purple',
+    'text-gaming-purple hover:shadow-purple-glow',
+  ].join(' '),
+
+  pink: [
+    'bg-transparent border border-gaming-pink/60',
+    'hover:bg-gaming-pink/10 hover:border-gaming-pink',
+    'text-gaming-pink hover:shadow-pink-glow',
+  ].join(' '),
+
+  ghost:  'bg-transparent hover:bg-gaming-card/60 text-gaming-text-secondary hover:text-white',
+  danger: 'bg-gaming-red/10 border border-gaming-red/40 hover:bg-gaming-red/20 text-gaming-red',
+  neon:   'bg-gaming-neon/10 border border-gaming-neon/40 hover:bg-gaming-neon/20 text-gaming-neon hover:shadow-neon-glow',
+  gold:   'bg-gradient-to-r from-[#ffd700]/15 to-[#ff8c00]/15 border border-[#ffd700]/40 hover:border-[#ffd700]/70 text-[#ffd700] hover:shadow-gold-glow',
+  cyan:   'bg-gaming-cyan/10 border border-gaming-cyan/40 hover:bg-gaming-cyan/20 text-gaming-cyan',
 }
 
 const SIZES = {
@@ -28,13 +52,13 @@ export default function Button({
       type={type}
       onClick={onClick}
       disabled={disabled || loading}
-      whileTap={{ scale: 0.97 }}
-      whileHover={{ scale: disabled ? 1 : 1.02 }}
+      whileTap={{ scale: 0.96 }}
+      whileHover={{ scale: disabled ? 1 : 1.025 }}
       className={`
         inline-flex items-center justify-center gap-2 font-heading font-semibold
         transition-all duration-200 cursor-pointer select-none
         disabled:opacity-50 disabled:cursor-not-allowed
-        ${VARIANTS[variant]} ${SIZES[size]}
+        ${VARIANTS[variant] ?? ''} ${SIZES[size]}
         ${fullWidth ? 'w-full' : ''}
         ${className}
       `}

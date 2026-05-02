@@ -7,8 +7,14 @@ import Input from '../components/ui/Input'
 import { useAuth } from '../contexts/AuthContext'
 import toast from 'react-hot-toast'
 
+const VILLES = [
+  'Dakar','Thiès','Saint-Louis','Ziguinchor',
+  'Mbour','Kaolack','Touba','Diourbel',
+  'Rufisque','Louga','Tambacounda','Kolda',
+]
+
 export default function Register() {
-  const [form, setForm] = useState({ fullName:'', email:'', phone:'', location:'', password:'', confirm:'' })
+  const [form, setForm]    = useState({ fullName:'', email:'', phone:'', location:'', password:'', confirm:'' })
   const [showPwd, setShowPwd] = useState(false)
   const [loading, setLoading] = useState(false)
   const { signUp }            = useAuth()
@@ -16,16 +22,30 @@ export default function Register() {
 
   function set(k, v) { setForm(f => ({ ...f, [k]: v })) }
 
+  const ERREURS = {
+    'User already registered':   'Un compte existe déjà avec cet email.',
+    'Password should be at least 6 characters': 'Le mot de passe doit contenir au moins 6 caractères.',
+  }
+
   async function handleSubmit(e) {
     e.preventDefault()
+    if (!form.fullName) return toast.error('Saisis ton nom complet')
+    if (!form.email)    return toast.error('Saisis ton adresse email')
+    if (form.password.length < 6) return toast.error('Mot de passe trop court (minimum 6 caractères)')
     if (form.password !== form.confirm) return toast.error('Les mots de passe ne correspondent pas')
-    if (form.password.length < 6)       return toast.error('Mot de passe trop court (min. 6 caractères)')
     setLoading(true)
     try {
-      await signUp({ email: form.email, password: form.password, fullName: form.fullName, phone: form.phone, location: form.location })
+      await signUp({
+        email:    form.email,
+        password: form.password,
+        fullName: form.fullName,
+        phone:    form.phone,
+        location: form.location,
+      })
       navigate('/')
     } catch (err) {
-      toast.error(err.message || 'Erreur lors de l\'inscription')
+      const msg = ERREURS[err.message] || "Erreur lors de l'inscription. Réessaie."
+      toast.error(msg)
     } finally {
       setLoading(false)
     }
@@ -50,44 +70,69 @@ export default function Register() {
 
         <div className="glass rounded-3xl p-8 shadow-gaming-lg">
           <h1 className="font-display font-bold text-2xl text-white mb-1">Créer un compte</h1>
-          <p className="text-gaming-text-muted font-body text-sm mb-7">Rejoins la communauté gaming — c'est gratuit</p>
+          <p className="text-gaming-text-muted font-body text-sm mb-7">
+            Rejoins la communauté gaming — c'est gratuit !
+          </p>
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <Input label="Nom complet" value={form.fullName} onChange={e => set('fullName', e.target.value)}
-              placeholder="Kouadio Mensah" icon={<User size={16}/>} required />
-            <Input label="Email" type="email" value={form.email} onChange={e => set('email', e.target.value)}
+            <Input label="Nom complet *" value={form.fullName}
+              onChange={e => set('fullName', e.target.value)}
+              placeholder="Ex : Moussa Diallo" icon={<User size={16}/>} required />
+
+            <Input label="Adresse email *" type="email" value={form.email}
+              onChange={e => set('email', e.target.value)}
               placeholder="ton@email.com" icon={<Mail size={16}/>} required />
+
             <div className="grid grid-cols-2 gap-3">
-              <Input label="Téléphone" type="tel" value={form.phone} onChange={e => set('phone', e.target.value)}
-                placeholder="+221 77..." icon={<Phone size={16}/>} />
-              <Input label="Ville" value={form.location} onChange={e => set('location', e.target.value)}
-                placeholder="Dakar" icon={<MapPin size={16}/>} />
+              <Input label="Téléphone" type="tel" value={form.phone}
+                onChange={e => set('phone', e.target.value)}
+                placeholder="+221 77…" icon={<Phone size={16}/>} />
+              <div className="flex flex-col gap-1.5">
+                <label className="text-sm font-heading font-medium text-gaming-text-secondary">Ville</label>
+                <select value={form.location} onChange={e => set('location', e.target.value)}
+                  className="w-full bg-gaming-surface border border-gaming-border rounded-xl px-3 py-3 text-sm
+                             text-gaming-text-primary focus:outline-none focus:border-gaming-purple transition-all
+                             font-body appearance-none cursor-pointer">
+                  <option value="">Choisir</option>
+                  {VILLES.map(v => <option key={v} value={v}>{v}</option>)}
+                </select>
+              </div>
             </div>
-            <Input label="Mot de passe" type={showPwd ? 'text' : 'password'} value={form.password}
-              onChange={e => set('password', e.target.value)} placeholder="••••••••" icon={<Lock size={16}/>}
+
+            <Input label="Mot de passe *"
+              type={showPwd ? 'text' : 'password'} value={form.password}
+              onChange={e => set('password', e.target.value)} placeholder="••••••••"
+              icon={<Lock size={16}/>}
               iconRight={
-                <button type="button" onClick={() => setShowPwd(s => !s)} className="hover:text-gaming-purple transition-colors">
+                <button type="button" onClick={() => setShowPwd(s => !s)}
+                  className="hover:text-gaming-purple transition-colors">
                   {showPwd ? <EyeOff size={16}/> : <Eye size={16}/>}
                 </button>
               }
               hint="Minimum 6 caractères" required />
-            <Input label="Confirmer le mot de passe" type={showPwd ? 'text' : 'password'} value={form.confirm}
-              onChange={e => set('confirm', e.target.value)} placeholder="••••••••" icon={<Lock size={16}/>} required />
+
+            <Input label="Confirmer le mot de passe *"
+              type={showPwd ? 'text' : 'password'} value={form.confirm}
+              onChange={e => set('confirm', e.target.value)}
+              placeholder="••••••••" icon={<Lock size={16}/>} required />
 
             <Button type="submit" fullWidth size="lg" loading={loading} className="mt-2">
-              Créer mon compte
+              {loading ? 'Création du compte...' : 'Créer mon compte gratuit'}
             </Button>
           </form>
 
-          <p className="text-xs text-gaming-text-muted font-body text-center mt-4">
+          <p className="text-xs text-gaming-text-muted font-body text-center mt-4 leading-relaxed">
             En créant un compte, tu acceptes nos{' '}
             <Link to="#" className="text-gaming-purple hover:underline">conditions d'utilisation</Link>
+            {' '}et notre{' '}
+            <Link to="#" className="text-gaming-purple hover:underline">politique de confidentialité</Link>.
           </p>
 
           <div className="mt-5 pt-5 border-t border-gaming-border/40 text-center">
             <p className="text-sm text-gaming-text-muted font-body">
               Déjà un compte ?{' '}
-              <Link to="/connexion" className="text-gaming-purple hover:text-gaming-purple-light font-heading font-semibold transition-colors">
+              <Link to="/connexion"
+                className="text-gaming-purple hover:text-gaming-purple-light font-heading font-semibold transition-colors">
                 Se connecter
               </Link>
             </p>

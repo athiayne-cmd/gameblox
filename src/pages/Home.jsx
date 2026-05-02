@@ -4,19 +4,25 @@ import { ArrowRight, ShieldCheck, Zap, Star, TrendingUp, ChevronRight } from 'lu
 import ProductCard from '../components/ui/ProductCard'
 import CategoryCard from '../components/ui/CategoryCard'
 import Button from '../components/ui/Button'
-import { PRODUCTS, CATEGORIES, STATS, TESTIMONIALS } from '../utils/mockData'
+import Stories from '../components/ui/Stories'
+import Particles from '../components/ui/Particles'
+import { PRODUCTS, CATEGORIES, STATS, TESTIMONIALS, CAT_STYLE } from '../utils/mockData'
 import { formatPrice } from '../utils/formatters'
 
 /* ── Hero ───────────────────────────────────────────────────── */
 function Hero() {
   return (
     <section className="relative min-h-screen flex items-center overflow-hidden hero-gradient">
-      {/* Animated grid background */}
-      <div className="absolute inset-0 grid-bg opacity-40" />
+      {/* Particules lumineuses */}
+      <Particles />
 
-      {/* Glow orbs */}
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-gaming-purple/20 rounded-full blur-[120px] animate-pulse-slow" />
-      <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-gaming-cyan/15 rounded-full blur-[100px] animate-pulse-slow" style={{ animationDelay: '1s' }} />
+      {/* Grille de fond */}
+      <div className="absolute inset-0 grid-bg opacity-30" />
+
+      {/* Orbes de lueur */}
+      <div className="absolute top-1/4 left-1/6 w-[500px] h-[500px] bg-gaming-purple/18 rounded-full blur-[140px] animate-pulse-slow" />
+      <div className="absolute bottom-1/4 right-1/6 w-96 h-96 bg-gaming-pink/12 rounded-full blur-[120px] animate-pulse-slow" style={{ animationDelay: '1.5s' }} />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-gaming-purple/6 rounded-full blur-[100px]" />
 
       <div className="page-container relative z-10 py-20">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
@@ -24,8 +30,10 @@ function Hero() {
           {/* Left: Text */}
           <div className="space-y-8">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gaming-purple/10 border border-gaming-purple/30 text-gaming-purple text-sm font-heading font-semibold">
-                <Zap size={14} /> Marketplace N°1 en Afrique
+              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-heading font-semibold
+                               bg-gradient-to-r from-gaming-purple/20 to-gaming-pink/10
+                               border border-gaming-purple/40 text-gaming-purple-light">
+                <Zap size={14} className="text-gaming-pink" /> Marketplace N°1 en Afrique de l'Ouest
               </span>
             </motion.div>
 
@@ -68,7 +76,7 @@ function Hero() {
             >
               {STATS.map(s => (
                 <div key={s.label} className="flex flex-col">
-                  <span className="font-display font-bold text-2xl text-white">{s.value}</span>
+                  <span className="font-display font-bold text-2xl gradient-text">{s.value}</span>
                   <span className="text-xs text-gaming-text-muted font-body">{s.label}</span>
                 </div>
               ))}
@@ -80,37 +88,47 @@ function Hero() {
             initial={{ opacity: 0, x: 40 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.3, duration: 0.6 }}
             className="hidden lg:grid grid-cols-2 gap-4"
           >
-            {PRODUCTS.filter(p => p.featured).slice(0, 4).map((p, i) => (
-              <motion.div
-                key={p.id}
-                animate={{ y: [0, i % 2 === 0 ? -8 : 8, 0] }}
-                transition={{ duration: 3 + i * 0.5, repeat: Infinity, ease: 'easeInOut' }}
-                className={`gaming-card overflow-hidden ${i === 0 ? 'col-span-2' : ''}`}
-              >
-                <div className={`relative overflow-hidden ${i === 0 ? 'h-48' : 'h-36'}`}>
-                  <img src={p.images[0]} alt={p.title}
-                    className="w-full h-full object-cover" loading="lazy"
-                    onError={e => { e.target.style.display='none' }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-gaming-bg/80 via-transparent to-transparent" />
-                  <div className="absolute bottom-3 left-3">
-                    <p className="font-heading font-semibold text-white text-sm line-clamp-1">{p.title}</p>
-                    <p className="font-mono font-bold text-gaming-gold text-sm">{formatPrice(p.price)}</p>
-                  </div>
-                </div>
-              </motion.div>
-            ))}
+            {PRODUCTS.filter(p => p.featured).slice(0, 4).map((p, i) => {
+              const cat = CAT_STYLE[p.category] || { emoji: '🎮', gradient: 'from-gaming-surface to-gaming-card' }
+              return (
+                <motion.div
+                  key={p.id}
+                  animate={{ y: [0, i % 2 === 0 ? -8 : 8, 0] }}
+                  transition={{ duration: 3 + i * 0.5, repeat: Infinity, ease: 'easeInOut' }}
+                  className={`gaming-card overflow-hidden ${i === 0 ? 'col-span-2' : ''}`}
+                >
+                  <Link to={`/produit/${p.slug}`}>
+                    <div className={`relative overflow-hidden bg-gradient-to-br ${cat.gradient} ${i === 0 ? 'h-48' : 'h-36'} flex items-center justify-center`}>
+                      <div className="absolute inset-0 grid-bg opacity-20" />
+                      <motion.span
+                        className={`${i === 0 ? 'text-7xl' : 'text-5xl'} select-none z-10`}
+                        animate={{ scale: [1, 1.06, 1] }}
+                        transition={{ duration: 3 + i * 0.4, repeat: Infinity, ease: 'easeInOut' }}
+                      >
+                        {cat.emoji}
+                      </motion.span>
+                      <div className="absolute inset-0 bg-gradient-to-t from-gaming-bg/80 via-transparent to-transparent" />
+                      <div className="absolute bottom-3 left-3">
+                        <p className="font-heading font-semibold text-white text-sm line-clamp-1">{p.title}</p>
+                        <p className="font-mono font-bold text-gaming-gold text-sm">{formatPrice(p.price)}</p>
+                      </div>
+                    </div>
+                  </Link>
+                </motion.div>
+              )
+            })}
           </motion.div>
         </div>
       </div>
 
       {/* Marquee categories */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gaming-surface/50 backdrop-blur-sm border-t border-gaming-border/30 py-3 overflow-hidden">
+      <div className="absolute bottom-0 left-0 right-0 py-3 overflow-hidden border-t border-gaming-purple/15"
+           style={{ background: 'rgba(18,0,42,0.7)', backdropFilter: 'blur(12px)' }}>
         <div className="flex animate-marquee whitespace-nowrap">
           {[...CATEGORIES, ...CATEGORIES].map((c, i) => (
             <span key={i} className="inline-flex items-center gap-2 mx-6 text-gaming-text-muted text-sm font-body flex-shrink-0">
               <span>{c.icon}</span> {c.name}
-              <span className="text-gaming-border mx-2">·</span>
+              <span className="text-gaming-purple/30 mx-2">·</span>
             </span>
           ))}
         </div>
@@ -128,7 +146,7 @@ function CategoriesSection() {
           <p className="text-gaming-purple font-heading font-semibold text-sm mb-2">Parcourir par catégorie</p>
           <h2 className="section-title">Que cherches-tu ?</h2>
         </div>
-        <Link to="/marketplace" className="hidden sm:flex items-center gap-1 text-sm text-gaming-text-muted hover:text-gaming-purple transition-colors font-heading">
+        <Link to="/marketplace" className="hidden sm:flex items-center gap-1 text-sm text-gaming-text-muted hover:text-gaming-purple-light transition-colors font-heading">
           Voir tout <ChevronRight size={16} />
         </Link>
       </div>
@@ -145,7 +163,7 @@ function CategoriesSection() {
 function FeaturedSection() {
   const featured = PRODUCTS.filter(p => p.featured)
   return (
-    <section className="py-16 bg-gaming-surface/30">
+    <section className="py-16 bg-gaming-surface/40">
       <div className="page-container">
         <div className="flex items-end justify-between mb-10">
           <div>
@@ -154,7 +172,7 @@ function FeaturedSection() {
             </p>
             <h2 className="section-title">Produits du moment</h2>
           </div>
-          <Link to="/marketplace" className="hidden sm:flex items-center gap-1 text-sm text-gaming-text-muted hover:text-gaming-purple transition-colors font-heading">
+          <Link to="/marketplace" className="hidden sm:flex items-center gap-1 text-sm text-gaming-text-muted hover:text-gaming-purple-light transition-colors font-heading">
             Voir tout <ChevronRight size={16} />
           </Link>
         </div>
@@ -213,7 +231,7 @@ function RecentListings() {
           <p className="text-gaming-neon font-heading font-semibold text-sm mb-2">Dernières annonces</p>
           <h2 className="section-title">Nouvelles arrivées</h2>
         </div>
-        <Link to="/marketplace" className="hidden sm:flex items-center gap-1 text-sm text-gaming-text-muted hover:text-gaming-purple transition-colors font-heading">
+        <Link to="/marketplace" className="hidden sm:flex items-center gap-1 text-sm text-gaming-text-muted hover:text-gaming-purple-light transition-colors font-heading">
           Voir tout <ChevronRight size={16} />
         </Link>
       </div>
@@ -227,22 +245,22 @@ function RecentListings() {
 /* ── Trust / Testimonials ───────────────────────────────────── */
 function TrustSection() {
   return (
-    <section className="py-20 bg-gaming-surface/30">
+    <section className="py-20 bg-gaming-surface/40">
       <div className="page-container">
         {/* Trust badges */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-16">
           {[
-            { icon: <ShieldCheck size={28} className="text-gaming-neon" />, title: 'Paiements sécurisés', desc: 'Wave, Orange Money, MTN Money, Moov Money. Transactions 100% protégées.' },
-            { icon: <Star size={28} className="text-gaming-gold" />,        title: 'Vendeurs notés',      desc: 'Chaque vendeur est évalué par la communauté. Achetez en confiance.' },
-            { icon: <Zap size={28} className="text-gaming-purple" />,       title: 'Mise en ligne rapide', desc: 'Publiez votre annonce en 5 minutes et touchez des milliers d\'acheteurs.' },
+            { icon: <ShieldCheck size={28} className="text-gaming-neon" />, bg: 'from-gaming-neon/20 to-gaming-neon/5',   border: 'border-gaming-neon/25',   title: 'Paiements sécurisés', desc: 'Wave, Orange Money, MTN Money, Moov Money. Transactions 100% protégées.' },
+            { icon: <Star size={28} className="text-[#ffd700]" />,          bg: 'from-[#ffd700]/20 to-[#ff8c00]/5',       border: 'border-[#ffd700]/25',     title: 'Vendeurs notés',      desc: 'Chaque vendeur est évalué par la communauté. Achetez en confiance.' },
+            { icon: <Zap size={28} className="text-gaming-pink" />,         bg: 'from-gaming-pink/20 to-gaming-purple/5', border: 'border-gaming-pink/25',   title: 'Mise en ligne rapide', desc: "Publiez votre annonce en 5 minutes et touchez des milliers d'acheteurs." },
           ].map((item, i) => (
             <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
               transition={{ delay: i * 0.12 }} viewport={{ once: true }}
               className="gaming-card p-6 flex gap-4 items-start"
             >
-              <div className="p-3 rounded-xl bg-gaming-surface flex-shrink-0">{item.icon}</div>
+              <div className={`p-3 rounded-xl bg-gradient-to-br ${item.bg} border ${item.border} flex-shrink-0`}>{item.icon}</div>
               <div>
-                <h3 className="font-heading font-semibold text-gaming-text-primary mb-1">{item.title}</h3>
+                <h3 className="font-heading font-semibold text-white mb-1">{item.title}</h3>
                 <p className="text-gaming-text-muted font-body text-sm leading-relaxed">{item.desc}</p>
               </div>
             </motion.div>
@@ -259,12 +277,12 @@ function TrustSection() {
             >
               <div className="flex items-center gap-1">
                 {[...Array(t.rating)].map((_, j) => (
-                  <Star key={j} size={14} className="fill-gaming-gold text-gaming-gold" />
+                  <Star key={j} size={14} className="fill-[#ffd700] text-[#ffd700]" />
                 ))}
               </div>
               <p className="text-gaming-text-secondary font-body text-sm leading-relaxed">"{t.text}"</p>
               <div className="flex items-center gap-3 pt-2 border-t border-gaming-border/40">
-                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gaming-purple to-gaming-cyan flex items-center justify-center text-sm font-bold text-white">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-gaming-purple to-gaming-pink flex items-center justify-center text-sm font-bold text-white">
                   {t.name[0]}
                 </div>
                 <div>
@@ -287,10 +305,13 @@ function CTABanner() {
       <motion.div
         initial={{ opacity: 0, scale: 0.97 }} whileInView={{ opacity: 1, scale: 1 }}
         viewport={{ once: true }}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-gaming-purple/30 to-gaming-cyan/10 border border-gaming-purple/30 p-10 md:p-14 text-center"
+        className="relative overflow-hidden rounded-3xl p-10 md:p-14 text-center
+                   border border-gaming-purple/35"
+        style={{ background: 'linear-gradient(135deg, #1a0038 0%, #2d006040 50%, #1a0038 100%)' }}
       >
-        <div className="absolute inset-0 grid-bg opacity-20" />
-        <div className="absolute top-0 right-0 w-64 h-64 bg-gaming-purple/20 rounded-full blur-[80px]" />
+        <div className="absolute inset-0 grid-bg opacity-15" />
+        <div className="absolute top-0 right-0 w-72 h-72 bg-gaming-purple/25 rounded-full blur-[90px]" />
+        <div className="absolute bottom-0 left-0 w-60 h-60 bg-gaming-pink/15 rounded-full blur-[80px]" />
         <div className="relative z-10">
           <h2 className="font-display font-bold text-4xl md:text-5xl text-white mb-4">
             Prêt à vendre ton gear gaming ?
@@ -319,6 +340,7 @@ export default function Home() {
   return (
     <>
       <Hero />
+      <Stories />
       <CategoriesSection />
       <FeaturedSection />
       <HowItWorks />

@@ -8,46 +8,131 @@
   body {
     @apply bg-gaming-bg text-gaming-text-primary font-body;
     overflow-x: hidden;
+    background-image:
+      radial-gradient(ellipse at 15% 25%, rgba(139,0,255,0.07) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 75%, rgba(255,0,200,0.05) 0%, transparent 55%);
   }
 
   ::-webkit-scrollbar       { width: 5px; height: 5px; }
-  ::-webkit-scrollbar-track { @apply bg-gaming-surface; }
-  ::-webkit-scrollbar-thumb { @apply bg-gaming-border rounded-full; }
-  ::-webkit-scrollbar-thumb:hover { @apply bg-gaming-purple; }
+  ::-webkit-scrollbar-track { background: #0a0010; }
+  ::-webkit-scrollbar-thumb { background: #8b00ff; border-radius: 9999px; }
+  ::-webkit-scrollbar-thumb:hover { background: #ff00c8; }
 
-  ::selection { background: rgba(139,92,246,0.3); color: #fff; }
+  ::selection { background: rgba(139,0,255,0.35); color: #fff; }
 }
 
 @layer components {
+
+  /* ── Glassmorphism ───────────────────────────────────────── */
   .glass {
-    @apply bg-gaming-card/70 backdrop-blur-md border border-gaming-border/50;
+    background: rgba(26,0,56,0.65);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border: 1px solid rgba(139,0,255,0.22);
   }
   .glass-dark {
-    @apply bg-gaming-bg/80 backdrop-blur-xl border border-gaming-border/30;
+    background: rgba(10,0,16,0.88);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(139,0,255,0.18);
   }
+
+  /* ── Gradient text violet → rose ─────────────────────────── */
   .gradient-text {
-    @apply bg-neon-gradient bg-clip-text text-transparent;
+    background: linear-gradient(90deg, #8b00ff, #ff00c8, #8b00ff);
     background-size: 200% auto;
-    animation: gradientX 5s ease infinite;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientX 4s ease infinite;
   }
+  .gradient-text-gold {
+    background: linear-gradient(135deg, #ffd700, #ff8c00, #ffd700);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: gradientX 3s ease infinite;
+  }
+
+  /* ── Grille de fond ──────────────────────────────────────── */
   .grid-bg {
     background-image:
-      linear-gradient(rgba(30,58,95,0.25) 1px, transparent 1px),
-      linear-gradient(90deg, rgba(30,58,95,0.25) 1px, transparent 1px);
+      linear-gradient(rgba(139,0,255,0.1) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(139,0,255,0.1) 1px, transparent 1px);
     background-size: 48px 48px;
   }
+
+  /* ── Cards gaming ────────────────────────────────────────── */
   .gaming-card {
-    @apply bg-gaming-card border border-gaming-border rounded-2xl shadow-gaming
-           transition-all duration-300 hover:-translate-y-1 hover:border-gaming-purple/40 hover:shadow-card-hover;
+    background: #1a0038;
+    border: 1px solid rgba(139,0,255,0.22);
+    border-radius: 1rem;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.65), inset 0 1px 0 rgba(139,0,255,0.08);
+    transition: all 0.3s ease;
   }
-  .glow-border   { @apply border border-gaming-purple/50 shadow-purple-glow; }
-  .glow-cyan     { @apply border border-gaming-cyan/50 shadow-cyan-glow; }
-  .neon-text     { text-shadow: 0 0 12px rgba(139,92,246,0.9), 0 0 24px rgba(139,92,246,0.4); }
-  .neon-cyan-text{ text-shadow: 0 0 12px rgba(6,182,212,0.9), 0 0 24px rgba(6,182,212,0.4); }
+  .gaming-card:hover {
+    transform: translateY(-3px);
+    border-color: rgba(139,0,255,0.55);
+    box-shadow: 0 12px 40px rgba(139,0,255,0.22), 0 0 0 1px rgba(139,0,255,0.18),
+                inset 0 1px 0 rgba(255,0,200,0.06);
+  }
+
+  /* ── Textes néon ─────────────────────────────────────────── */
+  .neon-text {
+    text-shadow:
+      0 0 8px rgba(139,0,255,1),
+      0 0 20px rgba(139,0,255,0.7),
+      0 0 40px rgba(139,0,255,0.4),
+      0 0 60px rgba(255,0,200,0.2);
+  }
+  .neon-pink-text {
+    text-shadow:
+      0 0 8px rgba(255,0,200,1),
+      0 0 20px rgba(255,0,200,0.7),
+      0 0 40px rgba(255,0,200,0.4);
+  }
+  .neon-price {
+    color: #00ff88;
+    text-shadow: 0 0 8px rgba(0,255,136,0.7), 0 0 18px rgba(0,255,136,0.35);
+  }
+
+  /* ── Bordures glow ───────────────────────────────────────── */
+  .glow-border { border: 1px solid rgba(139,0,255,0.55); box-shadow: 0 0 20px rgba(139,0,255,0.4); }
+  .glow-pink   { border: 1px solid rgba(255,0,200,0.55); box-shadow: 0 0 20px rgba(255,0,200,0.4); }
+  .glow-gold   { border: 1px solid rgba(255,215,0,0.5);  box-shadow: 0 0 16px rgba(255,215,0,0.35); }
+
+  /* ── Bouton gradient principal ───────────────────────────── */
+  .btn-neon {
+    background: linear-gradient(135deg, #8b00ff 0%, #ff00c8 100%);
+    box-shadow: 0 0 20px rgba(139,0,255,0.45), 0 0 40px rgba(255,0,200,0.2);
+    transition: all 0.25s ease;
+  }
+  .btn-neon:hover {
+    background: linear-gradient(135deg, #aa33ff 0%, #ff33d6 100%);
+    box-shadow: 0 0 35px rgba(139,0,255,0.75), 0 0 70px rgba(255,0,200,0.45);
+    transform: translateY(-2px);
+  }
+
+  /* ── Bouton flottant pulse ───────────────────────────────── */
+  .btn-float-pulse {
+    animation: neonPulse 1.8s ease-in-out infinite;
+  }
+
+  /* ── Section title ───────────────────────────────────────── */
   .section-title {
-    @apply font-display font-bold text-3xl md:text-4xl text-gaming-text-primary;
+    @apply font-display font-bold text-3xl md:text-4xl text-white;
   }
+
+  /* ── Page container ──────────────────────────────────────── */
   .page-container {
     @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+
+  /* ── Header gradient animé ───────────────────────────────── */
+  .header-bg-animated {
+    background: linear-gradient(90deg, #0a0010 0%, #1a003855 25%, #8b00ff22 50%, #1a003855 75%, #0a0010 100%);
+    background-size: 300% 100%;
+    animation: gradientX 6s ease infinite;
   }
 }
