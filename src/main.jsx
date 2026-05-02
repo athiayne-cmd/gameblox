@@ -18,14 +18,15 @@ ReactDOM.createRoot(document.getElementById('root')).render(
             toastOptions={{
               duration: 3500,
               style: {
-                background: '#0F1F35',
-                color: '#F8FAFC',
-                border: '1px solid #1E3A5F',
+                background: '#1a0038',
+                color: '#ffffff',
+                border: '1px solid rgba(139,0,255,0.35)',
                 fontFamily: 'Inter, sans-serif',
                 fontSize: '14px',
+                boxShadow: '0 0 20px rgba(139,0,255,0.25)',
               },
-              success: { iconTheme: { primary: '#00FFB3', secondary: '#0F1F35' } },
-              error:   { iconTheme: { primary: '#EF4444', secondary: '#0F1F35' } },
+              success: { iconTheme: { primary: '#00ff88', secondary: '#1a0038' } },
+              error:   { iconTheme: { primary: '#ff3355', secondary: '#1a0038' } },
             }}
           />
         </CartProvider>
