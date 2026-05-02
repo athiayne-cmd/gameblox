@@ -98,19 +98,24 @@ function Hero() {
                   className={`gaming-card overflow-hidden ${i === 0 ? 'col-span-2' : ''}`}
                 >
                   <Link to={`/produit/${p.slug}`}>
-                    <div className={`relative overflow-hidden bg-gradient-to-br ${cat.gradient} ${i === 0 ? 'h-48' : 'h-36'} flex items-center justify-center`}>
-                      <div className="absolute inset-0 grid-bg opacity-20" />
-                      <motion.span
-                        className={`${i === 0 ? 'text-7xl' : 'text-5xl'} select-none z-10`}
-                        animate={{ scale: [1, 1.06, 1] }}
-                        transition={{ duration: 3 + i * 0.4, repeat: Infinity, ease: 'easeInOut' }}
-                      >
-                        {cat.emoji}
-                      </motion.span>
-                      <div className="absolute inset-0 bg-gradient-to-t from-gaming-bg/80 via-transparent to-transparent" />
+                    <div className={`relative overflow-hidden ${i === 0 ? 'h-48' : 'h-36'}`}>
+                      {/* Image produit ou catégorie */}
+                      {(p.images?.[0] || cat.image) ? (
+                        <img
+                          src={p.images?.[0] || cat.image}
+                          alt={p.title}
+                          loading="lazy"
+                          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                        />
+                      ) : (
+                        <div className={`w-full h-full bg-gradient-to-br ${cat.gradient} flex items-center justify-center`}>
+                          <span className={i === 0 ? 'text-7xl' : 'text-5xl'}>{cat.emoji}</span>
+                        </div>
+                      )}
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
                       <div className="absolute bottom-3 left-3">
                         <p className="font-heading font-semibold text-white text-sm line-clamp-1">{p.title}</p>
-                        <p className="font-mono font-bold text-gaming-gold text-sm">{formatPrice(p.price)}</p>
+                        <p className="neon-price font-mono font-bold text-sm">{formatPrice(p.price)}</p>
                       </div>
                     </div>
                   </Link>
@@ -127,7 +132,8 @@ function Hero() {
         <div className="flex animate-marquee whitespace-nowrap">
           {[...CATEGORIES, ...CATEGORIES].map((c, i) => (
             <span key={i} className="inline-flex items-center gap-2 mx-6 text-gaming-text-muted text-sm font-body flex-shrink-0">
-              <span>{c.icon}</span> {c.name}
+              <span className={`inline-block w-4 h-4 rounded-sm bg-gradient-to-br ${c.gradient} flex-shrink-0`} />
+              {c.name}
               <span className="text-gaming-purple/30 mx-2">·</span>
             </span>
           ))}

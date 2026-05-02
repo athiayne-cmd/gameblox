@@ -11,6 +11,7 @@ const STORY_DURATION = 8000
 
 /* ── Cercle story (accueil) ──────────────────────────────────── */
 function StoryCircle({ story, onClick, seen }) {
+  const [imgErr, setImgErr] = useState(false)
   const cat = CAT_STYLE[story.product.category] || CAT_STYLE.jeux
   return (
     <motion.button
@@ -19,13 +20,25 @@ function StoryCircle({ story, onClick, seen }) {
       onClick={onClick}
       className="flex flex-col items-center gap-2 flex-shrink-0 cursor-pointer"
     >
-      <div className={`relative w-16 h-16 rounded-2xl p-0.5 ${seen ? 'bg-gaming-border' : 'bg-gradient-to-br from-gaming-purple via-gaming-cyan to-gaming-neon'}`}>
-        <div className={`w-full h-full rounded-[14px] bg-gradient-to-br ${cat.gradient} flex items-center justify-center text-2xl border-2 border-gaming-bg`}>
-          {cat.emoji}
+      <div className={`relative w-16 h-16 rounded-2xl p-0.5 ${seen ? 'bg-gaming-border' : 'bg-gradient-to-br from-gaming-purple via-gaming-pink to-gaming-neon'}`}>
+        <div className="w-full h-full rounded-[14px] overflow-hidden border-2 border-gaming-bg">
+          {cat.image && !imgErr ? (
+            <img
+              src={cat.image}
+              alt={story.product.categoryName}
+              loading="lazy"
+              onError={() => setImgErr(true)}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className={`w-full h-full bg-gradient-to-br ${cat.gradient} flex items-center justify-center text-2xl`}>
+              {cat.emoji}
+            </div>
+          )}
         </div>
         {story.isPremium && (
-          <div className="absolute -top-1 -right-1 w-5 h-5 bg-gaming-gold rounded-full flex items-center justify-center">
-            <Crown size={10} className="text-gaming-bg" />
+          <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#ffd700] rounded-full flex items-center justify-center">
+            <Crown size={10} className="text-black" />
           </div>
         )}
       </div>
@@ -152,15 +165,20 @@ function StoryViewer({ stories, initialIndex, onClose }) {
               <div className="w-full h-full">
                 <VideoPlayer url={story.videoUrl} autoPlay className="w-full h-full object-cover" />
               </div>
+            ) : cat.image ? (
+              <div className="w-full h-full relative overflow-hidden">
+                <img
+                  src={cat.image}
+                  alt={story.product.categoryName}
+                  className="w-full h-full object-cover"
+                  loading="lazy"
+                />
+                {/* Overlay dégradé gaming */}
+                <div className={`absolute inset-0 bg-gradient-to-br ${cat.gradient} opacity-40`} />
+              </div>
             ) : (
-              <div className={`w-full h-full bg-gradient-to-br ${cat.gradient} flex items-center justify-center grid-bg`}>
-                <motion.span
-                  className="text-[140px] select-none"
-                  animate={{ scale: [1, 1.07, 1] }}
-                  transition={{ duration: 3, repeat: Infinity }}
-                >
-                  {cat.emoji}
-                </motion.span>
+              <div className={`w-full h-full bg-gradient-to-br ${cat.gradient} flex items-center justify-center`}>
+                <span className="text-[120px] select-none">{cat.emoji}</span>
               </div>
             )}
           </motion.div>

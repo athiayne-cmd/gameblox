@@ -1,7 +1,13 @@
 import { motion } from 'framer-motion'
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
+import { CAT_STYLE } from '../../utils/mockData'
 
 export default function CategoryCard({ category, index = 0 }) {
+  const [imgError, setImgError] = useState(false)
+  const catStyle = CAT_STYLE[category.id]
+  const image    = catStyle?.image
+
   return (
     <motion.div
       initial={{ opacity: 0, scale: 0.9 }}
@@ -20,11 +26,23 @@ export default function CategoryCard({ category, index = 0 }) {
         `}
       >
         <div className={`
-          w-14 h-14 rounded-2xl flex items-center justify-center text-3xl
-          bg-gradient-to-br ${category.gradient} shadow-gaming
+          w-14 h-14 rounded-2xl overflow-hidden shadow-gaming
           group-hover:shadow-purple-glow transition-all duration-300
+          bg-gradient-to-br ${category.gradient}
         `}>
-          {category.icon}
+          {image && !imgError ? (
+            <img
+              src={image}
+              alt={category.name}
+              loading="lazy"
+              onError={() => setImgError(true)}
+              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+            />
+          ) : (
+            <div className={`w-full h-full flex items-center justify-center bg-gradient-to-br ${category.gradient} text-3xl`}>
+              {category.icon}
+            </div>
+          )}
         </div>
         <div>
           <p className="font-heading font-semibold text-gaming-text-primary text-sm leading-tight">
