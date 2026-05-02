@@ -10,14 +10,38 @@ export const CATEGORIES = [
 ]
 
 export const CAT_STYLE = {
-  ps5:      { emoji: '🎮', gradient: 'from-purple-900 via-purple-700 to-violet-900' },
-  ps4:      { emoji: '📀', gradient: 'from-blue-900 via-blue-700 to-blue-900' },
-  xbox:     { emoji: '🎯', gradient: 'from-green-900 via-green-700 to-emerald-900' },
-  nintendo: { emoji: '🃏', gradient: 'from-red-900 via-red-700 to-rose-900' },
-  psp:      { emoji: '📱', gradient: 'from-cyan-900 via-cyan-700 to-sky-900' },
-  manettes: { emoji: '🕹️', gradient: 'from-orange-900 via-orange-700 to-amber-900' },
-  casques:  { emoji: '🎧', gradient: 'from-pink-900 via-pink-700 to-fuchsia-900' },
-  jeux:     { emoji: '💿', gradient: 'from-yellow-900 via-yellow-600 to-amber-900' },
+  ps5: {
+    emoji: '🎮', gradient: 'from-purple-900 via-purple-700 to-violet-900',
+    image: 'https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=600&h=450&fit=crop&q=80',
+  },
+  ps4: {
+    emoji: '📀', gradient: 'from-blue-900 via-blue-700 to-blue-900',
+    image: 'https://images.unsplash.com/photo-1486401899868-0e435ed85128?w=600&h=450&fit=crop&q=80',
+  },
+  xbox: {
+    emoji: '🎯', gradient: 'from-green-900 via-green-700 to-emerald-900',
+    image: 'https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=600&h=450&fit=crop&q=80',
+  },
+  nintendo: {
+    emoji: '🃏', gradient: 'from-red-900 via-red-700 to-rose-900',
+    image: 'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=600&h=450&fit=crop&q=80',
+  },
+  psp: {
+    emoji: '📱', gradient: 'from-cyan-900 via-cyan-700 to-sky-900',
+    image: 'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=600&h=450&fit=crop&q=80',
+  },
+  manettes: {
+    emoji: '🕹️', gradient: 'from-orange-900 via-orange-700 to-amber-900',
+    image: 'https://images.unsplash.com/photo-1593118247619-e2d6f056869e?w=600&h=450&fit=crop&q=80',
+  },
+  casques: {
+    emoji: '🎧', gradient: 'from-pink-900 via-pink-700 to-fuchsia-900',
+    image: 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&h=450&fit=crop&q=80',
+  },
+  jeux: {
+    emoji: '💿', gradient: 'from-yellow-900 via-yellow-600 to-amber-900',
+    image: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?w=600&h=450&fit=crop&q=80',
+  },
 }
 
 export const SELLERS = [

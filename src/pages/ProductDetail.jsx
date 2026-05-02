@@ -40,8 +40,11 @@ export default function ProductDetail() {
     ? Math.round((1 - product.price / product.originalPrice) * 100) : null
   const condVariant = { new: 'neon', excellent: 'cyan', good: 'purple', fair: 'gold' }[product.condition] || 'default'
 
-  // Build ordered media list: valid images first, then video
-  const validImages = (product.images || []).filter(url => !imgErrors[url])
+  // Build ordered media list: images produit → image catégorie → vidéo
+  const productImages = (product.images || []).filter(url => !imgErrors[url])
+  const catFallback   = productImages.length === 0 && cat.image && !imgErrors[cat.image]
+    ? [cat.image] : []
+  const validImages   = [...productImages, ...catFallback]
   const allMedia = [
     ...validImages.map(url => ({ type: 'image', url })),
     ...(product.videoUrl ? [{ type: 'video', url: product.videoUrl }] : []),
