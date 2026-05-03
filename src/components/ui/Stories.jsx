@@ -249,8 +249,8 @@ export default function Stories() {
 
   return (
     <>
-      <section className="py-6 page-container">
-        <div className="flex items-center justify-between mb-5">
+      <section className="py-4 px-4">
+        <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <Crown size={15} className="text-gaming-gold" />
             <span className="font-heading font-semibold text-gaming-text-primary text-sm">
