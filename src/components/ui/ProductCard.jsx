@@ -1,179 +1,107 @@
-import { motion } from 'framer-motion'
-import { Heart, Eye, MapPin, Star, ShoppingCart, MessageCircle } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import { useState } from 'react'
-import { formatPrice, CONDITIONS } from '../../utils/formatters'
+import { Link } from 'react-router-dom'
+import { Heart, MapPin } from 'lucide-react'
+import { formatPrice } from '../../utils/formatters'
 import { CAT_STYLE } from '../../utils/mockData'
-import Badge from './Badge'
-import { useCart } from '../../contexts/CartContext'
 
 export default function ProductCard({ product, index = 0 }) {
-  const [liked,    setLiked]    = useState(false)
-  const [imgError, setImgError] = useState(false)
-  const { addItem }             = useCart()
-  const cond = CONDITIONS[product.condition]
-  const cat  = CAT_STYLE[product.category] || { emoji: '🎮', gradient: 'from-gaming-surface to-gaming-card' }
+  const [liked, setLiked] = useState(false)
+  const [imgErr, setImgErr] = useState(false)
+  const cat = CAT_STYLE[product.category] || { emoji: '🎮', gradient: 'from-gaming-surface to-gaming-card' }
 
-  const condVariant = {
-    new: 'neon', excellent: 'cyan', good: 'purple', fair: 'gold',
-  }[product.condition] || 'default'
-
-  const discount = product.originalPrice
-    ? Math.round((1 - product.price / product.originalPrice) * 100) : null
-
-  /* Priorité : image produit → image catégorie → emoji */
-  const displayImage = !imgError
-    ? (product.images?.[0] || cat.image || null)
-    : null
+  const displayImg = !imgErr && product.images?.[0] ? product.images[0] : null
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 28 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.06 }}
-      className="group relative overflow-hidden flex flex-col rounded-2xl
-                 bg-gaming-card border border-gaming-border/60
-                 shadow-gaming transition-all duration-300
-                 hover:-translate-y-2 hover:border-gaming-purple/50 hover:shadow-card-hover"
+    <div
+      className="rounded-2xl overflow-hidden cursor-pointer relative border border-gaming-border/60
+                 transition-all duration-200 hover:-translate-y-1 hover:border-gaming-purple/50"
+      style={{ background: '#1a0038', boxShadow: '0 2px 16px rgba(0,0,0,0.5)' }}
     >
-      {/* Ligne néon supérieure au hover */}
-      <div className="absolute top-0 left-0 right-0 h-[2px] opacity-0 group-hover:opacity-100
-                      bg-gradient-to-r from-gaming-purple via-gaming-pink to-gaming-purple
-                      transition-opacity duration-300 z-10" />
-
-      {/* ── Visuel produit ── */}
-      <Link to={`/produit/${product.slug}`} className="block relative overflow-hidden rounded-t-2xl">
-        <div className={`aspect-[4/3] relative overflow-hidden
-                         ${!displayImage ? `bg-gradient-to-br ${cat.gradient}` : 'bg-gaming-surface'}`}>
-
-          {displayImage ? (
-            /* Photo réelle */
-            <>
-              <img
-                src={displayImage}
-                alt={product.title}
-                loading="lazy"
-                onError={() => setImgError(true)}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-              />
-              {/* Dégradé bas pour lisibilité badges */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
-            </>
+      {/* Image */}
+      <Link to={`/produit/${product.slug}`} className="block relative" style={{ height: 140 }}>
+        <div
+          className="w-full h-full flex items-center justify-center text-5xl relative overflow-hidden"
+          style={{ background: 'linear-gradient(135deg, #12002a 0%, #1a0038 100%)' }}
+        >
+          {displayImg ? (
+            <img
+              src={displayImg}
+              alt={product.title}
+              className="w-full h-full object-cover"
+              onError={() => setImgErr(true)}
+            />
           ) : (
-            /* Emoji fallback si aucune image */
-            <>
-              <div className="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-all duration-500" />
-              <div className="absolute inset-0 grid-bg opacity-15" />
-              <motion.span
-                className="absolute inset-0 flex items-center justify-center text-7xl select-none drop-shadow-lg"
-                animate={{ scale: [1, 1.05, 1] }}
-                transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut', delay: index * 0.3 }}
-              >
-                {cat.emoji}
-              </motion.span>
-            </>
+            <span className="select-none">{cat.emoji}</span>
           )}
 
-          {/* Badge remise */}
-          {discount && (
-            <div className="absolute top-2 left-2 z-10 px-2 py-0.5 rounded-full
-                            bg-gradient-to-r from-gaming-purple to-gaming-pink
-                            text-white text-xs font-mono font-bold shadow-btn-glow">
-              -{discount}%
-            </div>
+          {/* Overlay gradient on image */}
+          {displayImg && (
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
           )}
-          {/* Badge vedette */}
-          {product.featured && !discount && (
-            <div className="absolute top-2 left-2 z-10">
-              <span className="text-xs font-heading font-bold px-2 py-0.5 rounded-full
-                               bg-gradient-to-r from-[#ffd700] to-[#ff8c00] text-black">
-                ⭐ Vedette
-              </span>
+
+          {/* Premium badge */}
+          {product.featured && (
+            <div
+              className="absolute top-2 left-2 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold"
+              style={{ background: 'linear-gradient(90deg, #ffd700, #ff8c00)', color: '#000' }}
+            >
+              👑 PREMIUM
             </div>
           )}
 
-          {/* Vues au hover */}
-          <div className="absolute bottom-2 left-2 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <span className="flex items-center gap-1 text-xs text-white bg-black/60 backdrop-blur-sm rounded-full px-2 py-0.5">
-              <Eye size={10} /> {product.views}
-            </span>
+          {/* Condition badge */}
+          <div
+            className="absolute top-2 right-2 rounded-full px-2 py-0.5 text-[10px] font-bold text-white"
+            style={{ background: 'rgba(139,0,255,0.8)' }}
+          >
+            {product.condition === 'new' ? 'Neuf' :
+             product.condition === 'excellent' ? 'Très bon' :
+             product.condition === 'good' ? 'Bon état' : 'Correct'}
           </div>
-
-          {/* Reflet brillance */}
-          <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500
-                          bg-gradient-to-br from-white/[0.04] via-transparent to-transparent" />
         </div>
       </Link>
 
-      {/* Bouton favori */}
-      <button
-        onClick={() => setLiked(l => !l)}
-        className="absolute top-2 right-2 p-2 rounded-full glass transition-all duration-200 hover:scale-110 z-10"
-      >
-        <Heart size={14} className={liked ? 'fill-gaming-pink text-gaming-pink' : 'text-white/70'} />
-      </button>
-
-      {/* ── Contenu texte ── */}
-      <div className="p-4 space-y-3 flex-1 flex flex-col">
-        <div className="flex items-center gap-1.5 flex-wrap">
-          <Badge variant={condVariant}>{cond?.label}</Badge>
-          <Badge variant="default">{product.categoryName}</Badge>
-        </div>
-
-        <Link to={`/produit/${product.slug}`} className="flex-1">
-          <h3 className="font-heading font-semibold text-gaming-text-primary text-sm leading-snug
-                         line-clamp-2 hover:text-gaming-purple-light transition-colors duration-200">
+      {/* Info */}
+      <div style={{ padding: '10px 12px 12px' }}>
+        <Link to={`/produit/${product.slug}`}>
+          <p className="font-heading font-bold text-white leading-snug line-clamp-2" style={{ fontSize: 13 }}>
             {product.title}
-          </h3>
+          </p>
+          <p className="font-mono font-bold mt-1" style={{ fontSize: 16, color: '#aa33ff' }}>
+            {formatPrice(product.price)}
+          </p>
+          <p className="flex items-center gap-1 mt-1" style={{ fontSize: 11, color: '#6b6b8a' }}>
+            <MapPin size={11} style={{ color: '#8b00ff' }} />
+            {product.location}
+          </p>
         </Link>
 
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-gradient-to-br from-gaming-purple to-gaming-pink
-                          flex items-center justify-center text-xs font-bold text-white flex-shrink-0">
-            {product.seller.name[0]}
-          </div>
-          <span className="text-xs text-gaming-text-secondary font-body truncate flex-1">
-            {product.seller.name}
-            {product.seller.verified && <span className="text-gaming-neon ml-1">✓</span>}
-          </span>
-          <div className="flex items-center gap-0.5 flex-shrink-0">
-            <Star size={10} className="fill-[#ffd700] text-[#ffd700]" />
-            <span className="text-xs text-[#ffd700] font-mono">{product.seller.rating}</span>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1 text-gaming-text-muted">
-          <MapPin size={11} className="text-gaming-purple-light" />
-          <span className="text-xs font-body">{product.location}</span>
-        </div>
-
-        <div className="flex items-center justify-between pt-2.5 border-t border-gaming-border/50 mt-auto">
-          <div>
-            <p className="neon-price font-mono font-bold text-base leading-none">{formatPrice(product.price)}</p>
-            {product.originalPrice && (
-              <p className="text-xs text-gaming-text-muted line-through font-mono mt-0.5">
-                {formatPrice(product.originalPrice)}
-              </p>
-            )}
-          </div>
+        <div className="flex items-center justify-between mt-2">
           <div className="flex items-center gap-1.5">
-            <Link to={`/messages?product=${product.id}`}>
-              <motion.button whileTap={{ scale: 0.9 }}
-                className="p-2 rounded-xl bg-gaming-surface border border-gaming-border
-                           hover:border-gaming-cyan/50 text-gaming-text-muted hover:text-gaming-cyan transition-all duration-200">
-                <MessageCircle size={14} />
-              </motion.button>
-            </Link>
-            <motion.button whileTap={{ scale: 0.9 }} onClick={() => addItem(product)}
-              className="p-2 rounded-xl bg-gradient-to-r from-gaming-purple/20 to-gaming-pink/10
-                         border border-gaming-purple/35 hover:border-gaming-purple
-                         hover:from-gaming-purple/40 hover:to-gaming-pink/20
-                         text-gaming-purple-light hover:text-white hover:shadow-purple-glow transition-all duration-200">
-              <ShoppingCart size={14} />
-            </motion.button>
+            <div
+              className="flex items-center justify-center rounded-full text-white font-bold flex-shrink-0"
+              style={{
+                width: 22, height: 22, fontSize: 10,
+                background: 'linear-gradient(135deg, #8b00ff, #ff00c8)',
+              }}
+            >
+              {product.seller?.name?.[0] || '?'}
+            </div>
+            <span className="truncate" style={{ fontSize: 11, color: '#a0a0b0', maxWidth: 80 }}>
+              {product.seller?.name?.split(' ')[0] || ''}
+            </span>
           </div>
+
+          <button
+            onClick={e => { e.preventDefault(); e.stopPropagation(); setLiked(l => !l) }}
+            className="flex items-center gap-1 transition-colors"
+            style={{ fontSize: 11, color: liked ? '#ff3355' : '#6b6b8a', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+          >
+            <Heart size={13} style={{ fill: liked ? '#ff3355' : 'none', stroke: liked ? '#ff3355' : '#6b6b8a' }} />
+            {(product.likes || 0) + (liked ? 1 : 0)}
+          </button>
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
