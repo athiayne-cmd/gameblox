@@ -1,319 +1,281 @@
 import { useState } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { motion, AnimatePresence } from 'framer-motion'
-import {
-  Heart, Eye, MapPin, Star, ShoppingCart, MessageCircle,
-  Share2, ArrowLeft, Shield, CheckCircle, ChevronLeft, ChevronRight
-} from 'lucide-react'
+import { ArrowLeft, Heart, MapPin, MessageCircle } from 'lucide-react'
 import { PRODUCTS, CAT_STYLE } from '../utils/mockData'
-import { formatPrice, formatRelativeDate, CONDITIONS } from '../utils/formatters'
+import { formatPrice, CONDITIONS } from '../utils/formatters'
 import ProductCard from '../components/ui/ProductCard'
-import Button from '../components/ui/Button'
-import Badge from '../components/ui/Badge'
-import VideoPlayer, { VideoThumb } from '../components/ui/VideoPlayer'
-import { useCart } from '../contexts/CartContext'
-import toast from 'react-hot-toast'
 
 export default function ProductDetail() {
-  const { slug }              = useParams()
-  const navigate              = useNavigate()
-  const product               = PRODUCTS.find(p => p.slug === slug)
+  const { slug }    = useParams()
+  const navigate    = useNavigate()
+  const product     = PRODUCTS.find(p => p.slug === slug)
   const [liked, setLiked]     = useState(false)
-  const [mediaIdx, setMediaIdx] = useState(0)
+  const [activeImg, setActiveImg] = useState(0)
   const [imgErrors, setImgErrors] = useState({})
-  const { addItem }           = useCart()
 
   if (!product) return (
-    <div className="min-h-screen flex items-center justify-center">
-      <div className="text-center">
-        <p className="text-5xl mb-4">🎮</p>
-        <h2 className="font-display font-bold text-2xl text-white mb-4">Produit introuvable</h2>
-        <Button onClick={() => navigate('/marketplace')}>Retour au marketplace</Button>
+    <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0010' }}>
+      <div style={{ textAlign: 'center', padding: 40 }}>
+        <p style={{ fontSize: 48 }}>🎮</p>
+        <h2 style={{ color: '#fff', fontFamily: 'Rajdhani, sans-serif', fontSize: 22, fontWeight: 800, marginTop: 12 }}>
+          Produit introuvable
+        </h2>
+        <button
+          onClick={() => navigate('/marketplace')}
+          style={{ marginTop: 16, background: '#8b00ff', color: '#fff', border: 'none', borderRadius: 12, padding: '12px 24px', fontWeight: 700, cursor: 'pointer', fontFamily: 'Space Grotesk, sans-serif' }}
+        >
+          Retour au marketplace
+        </button>
       </div>
     </div>
   )
 
-  const cond        = CONDITIONS[product.condition]
-  const cat         = CAT_STYLE[product.category] || { emoji: '🎮', gradient: 'from-gaming-surface to-gaming-card' }
-  const similar     = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4)
-  const discount    = product.originalPrice
-    ? Math.round((1 - product.price / product.originalPrice) * 100) : null
-  const condVariant = { new: 'neon', excellent: 'cyan', good: 'purple', fair: 'gold' }[product.condition] || 'default'
+  const cat        = CAT_STYLE[product.category] || { emoji: '🎮', gradient: 'from-gaming-surface to-gaming-card' }
+  const cond       = CONDITIONS[product.condition]
+  const similar    = PRODUCTS.filter(p => p.category === product.category && p.id !== product.id).slice(0, 4)
+  const discount   = product.originalPrice ? Math.round((1 - product.price / product.originalPrice) * 100) : null
 
-  // Build ordered media list: images produit → image catégorie → vidéo
-  const productImages = (product.images || []).filter(url => !imgErrors[url])
-  const catFallback   = productImages.length === 0 && cat.image && !imgErrors[cat.image]
-    ? [cat.image] : []
-  const validImages   = [...productImages, ...catFallback]
-  const allMedia = [
-    ...validImages.map(url => ({ type: 'image', url })),
-    ...(product.videoUrl ? [{ type: 'video', url: product.videoUrl }] : []),
-  ]
-  const hasRealMedia = allMedia.length > 0
-  const totalSlides  = hasRealMedia ? allMedia.length : 1
-  const safeIdx      = Math.min(mediaIdx, totalSlides - 1)
-  const currentItem  = hasRealMedia ? allMedia[safeIdx] : null
+  const validImages = (product.images || []).filter(url => !imgErrors[url])
+  const displayImages = validImages.length > 0 ? validImages : null
 
-  const goPrev = () => setMediaIdx(i => Math.max(0, i - 1))
-  const goNext = () => setMediaIdx(i => Math.min(totalSlides - 1, i + 1))
-  const handleImgError = (url) => {
-    setImgErrors(prev => ({ ...prev, [url]: true }))
-    // If the broken image was the current slide, stay on same index (will shift to next valid)
-  }
+  const safeIdx = Math.min(activeImg, Math.max(0, (displayImages?.length || 1) - 1))
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="page-container">
+    <div style={{ minHeight: '100%', background: '#0a0010', paddingBottom: 90 }}>
 
-        {/* Fil d'Ariane */}
-        <div className="flex items-center gap-2 text-sm text-gaming-text-muted mb-6 font-body flex-wrap">
-          <button onClick={() => navigate(-1)} className="flex items-center gap-1 hover:text-gaming-purple transition-colors">
-            <ArrowLeft size={16} /> Retour
+      {/* ── Sticky Header ── */}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 20,
+        background: '#120020', padding: '12px 14px',
+        display: 'flex', alignItems: 'center', gap: 12,
+        borderBottom: '1px solid rgba(139,0,255,0.2)',
+      }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8b00ff', padding: 0 }}
+        >
+          <ArrowLeft size={22} />
+        </button>
+        <span style={{ fontWeight: 700, fontSize: 16, fontFamily: 'Rajdhani, sans-serif', color: '#fff', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+          {product.title}
+        </span>
+        <button
+          onClick={() => setLiked(l => !l)}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: liked ? '#ff3355' : '#6b6b8a' }}
+        >
+          <Heart size={20} style={{ fill: liked ? '#ff3355' : 'none', stroke: liked ? '#ff3355' : '#6b6b8a' }} />
+        </button>
+      </div>
+
+      {/* ── Image carousel ── */}
+      <div style={{
+        height: 220, position: 'relative',
+        background: 'linear-gradient(135deg, #120020 0%, #1a0038 100%)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        overflow: 'hidden',
+      }}>
+        {displayImages ? (
+          <img
+            src={displayImages[safeIdx]}
+            alt={product.title}
+            style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+            onError={() => setImgErrors(prev => ({ ...prev, [displayImages[safeIdx]]: true }))}
+          />
+        ) : (
+          <span style={{ fontSize: 80, userSelect: 'none' }}>{cat.emoji}</span>
+        )}
+
+        {/* Discount badge */}
+        {discount && (
+          <div style={{
+            position: 'absolute', top: 12, left: 12,
+            background: '#ff3355', color: '#fff', borderRadius: 20,
+            padding: '3px 10px', fontSize: 12, fontWeight: 700, fontFamily: 'Space Mono, monospace',
+          }}>
+            -{discount}%
+          </div>
+        )}
+
+        {/* Premium badge */}
+        {product.featured && (
+          <div style={{
+            position: 'absolute', top: 12, left: discount ? 80 : 12,
+            background: 'linear-gradient(90deg, #ffd700, #ff8c00)',
+            color: '#000', borderRadius: 20,
+            padding: '3px 10px', fontSize: 11, fontWeight: 700,
+            display: 'flex', alignItems: 'center', gap: 4,
+          }}>
+            👑 VENDEUR PREMIUM
+          </div>
+        )}
+      </div>
+
+      {/* ── Thumbnails ── */}
+      {displayImages && displayImages.length > 1 && (
+        <div style={{ display: 'flex', gap: 8, padding: '10px 14px' }}>
+          {displayImages.map((img, i) => (
+            <button
+              key={i}
+              onClick={() => setActiveImg(i)}
+              style={{
+                width: 50, height: 50, borderRadius: 8, overflow: 'hidden', cursor: 'pointer',
+                border: `2px solid ${safeIdx === i ? '#8b00ff' : 'rgba(139,0,255,0.2)'}`,
+                background: '#1a0038', padding: 0,
+                boxShadow: safeIdx === i ? '0 0 10px rgba(139,0,255,0.4)' : 'none',
+              }}
+            >
+              <img src={img} alt={`Photo ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </button>
+          ))}
+        </div>
+      )}
+
+      {/* ── Content ── */}
+      <div style={{ padding: '8px 14px 20px' }}>
+
+        {/* Title + Price + Like */}
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginTop: 4 }}>
+          <div style={{ flex: 1, marginRight: 10 }}>
+            <h2 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: '#fff', fontFamily: 'Rajdhani, sans-serif', lineHeight: 1.2 }}>
+              {product.title}
+            </h2>
+            <div style={{ display: 'flex', alignItems: 'baseline', gap: 8, marginTop: 4 }}>
+              <p style={{ margin: 0, fontSize: 24, fontWeight: 900, color: '#aa33ff', fontFamily: 'Space Mono, monospace' }}>
+                {formatPrice(product.price)}
+              </p>
+              {product.originalPrice && (
+                <p style={{ margin: 0, fontSize: 14, color: '#6b6b8a', textDecoration: 'line-through', fontFamily: 'Space Mono, monospace' }}>
+                  {formatPrice(product.originalPrice)}
+                </p>
+              )}
+            </div>
+          </div>
+          <button
+            onClick={() => setLiked(l => !l)}
+            style={{
+              background: liked ? 'rgba(255,51,85,0.15)' : '#1a0038',
+              border: `1px solid ${liked ? 'rgba(255,51,85,0.3)' : 'rgba(139,0,255,0.2)'}`,
+              cursor: 'pointer', borderRadius: '50%', width: 42, height: 42,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              color: liked ? '#ff3355' : '#6b6b8a', flexShrink: 0,
+            }}
+          >
+            <Heart size={20} style={{ fill: liked ? '#ff3355' : 'none', stroke: liked ? '#ff3355' : '#6b6b8a' }} />
           </button>
-          <span>/</span>
-          <Link to="/marketplace" className="hover:text-gaming-purple transition-colors">Marketplace</Link>
-          <span>/</span>
-          <span className="text-gaming-text-primary truncate max-w-[200px]">{product.title}</span>
         </div>
 
-        <div className="grid lg:grid-cols-2 gap-10 mb-16">
+        {/* Badges */}
+        <div style={{ display: 'flex', gap: 6, marginTop: 10, flexWrap: 'wrap' }}>
+          <span style={{
+            background: 'rgba(139,0,255,0.2)', color: '#aa33ff', borderRadius: 20,
+            padding: '3px 10px', fontSize: 11, fontWeight: 600, border: '1px solid rgba(139,0,255,0.3)',
+            fontFamily: 'Space Grotesk, sans-serif',
+          }}>
+            {cond?.label || product.condition}
+          </span>
+          <span style={{
+            background: 'rgba(0,200,255,0.1)', color: '#00c8ff', borderRadius: 20,
+            padding: '3px 10px', fontSize: 11, fontWeight: 600, border: '1px solid rgba(0,200,255,0.25)',
+            fontFamily: 'Space Grotesk, sans-serif',
+          }}>
+            {product.categoryName}
+          </span>
+        </div>
 
-          {/* ── Carrousel médias ── */}
-          <div className="space-y-3">
-
-            {/* Affichage principal */}
-            <div className="relative rounded-2xl overflow-hidden group">
-              <AnimatePresence mode="wait">
-                {!hasRealMedia ? (
-                  /* Emoji fallback quand aucune image */
-                  <motion.div key="emoji"
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className={`aspect-[4/3] bg-gradient-to-br ${cat.gradient} flex items-center justify-center relative`}>
-                    <div className="absolute inset-0 grid-bg opacity-20" />
-                    <motion.span
-                      className="text-[120px] z-10 select-none"
-                      animate={{ scale: [1, 1.06, 1] }}
-                      transition={{ duration: 3.5, repeat: Infinity, ease: 'easeInOut' }}>
-                      {cat.emoji}
-                    </motion.span>
-                  </motion.div>
-
-                ) : currentItem?.type === 'image' ? (
-                  /* Photo réelle */
-                  <motion.div key={`img-${safeIdx}`}
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="aspect-[4/3] bg-gaming-surface overflow-hidden">
-                    <img
-                      src={currentItem.url}
-                      alt={`${product.title} — photo ${safeIdx + 1}`}
-                      loading="lazy"
-                      onError={() => handleImgError(currentItem.url)}
-                      className="w-full h-full object-cover"
-                    />
-                  </motion.div>
-
-                ) : (
-                  /* Lecteur vidéo */
-                  <motion.div key="video"
-                    initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                    className="aspect-[4/3] bg-black rounded-2xl overflow-hidden flex items-center justify-center">
-                    <VideoPlayer url={product.videoUrl} className="w-full" />
-                  </motion.div>
-                )}
-              </AnimatePresence>
-
-              {/* Badge remise */}
-              {discount && currentItem?.type !== 'video' && (
-                <div className="absolute top-4 left-4 px-3 py-1 rounded-full bg-gaming-red text-white text-sm font-mono font-bold z-20">
-                  -{discount}%
-                </div>
-              )}
-
-              {/* Bouton like */}
-              <button onClick={() => setLiked(l => !l)}
-                className="absolute top-4 right-4 p-3 glass rounded-full transition-all duration-200 hover:scale-110 z-20">
-                <Heart size={20} className={liked ? 'fill-gaming-red text-gaming-red' : 'text-white'} />
-              </button>
-
-              {/* Flèches navigation */}
-              {totalSlides > 1 && (
-                <>
-                  <button
-                    onClick={goPrev}
-                    disabled={safeIdx === 0}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-black/50 backdrop-blur-sm text-white
-                               hover:bg-black/70 transition-all disabled:opacity-20 disabled:cursor-not-allowed
-                               opacity-0 group-hover:opacity-100">
-                    <ChevronLeft size={22} />
-                  </button>
-                  <button
-                    onClick={goNext}
-                    disabled={safeIdx === totalSlides - 1}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-2.5 rounded-full bg-black/50 backdrop-blur-sm text-white
-                               hover:bg-black/70 transition-all disabled:opacity-20 disabled:cursor-not-allowed
-                               opacity-0 group-hover:opacity-100">
-                    <ChevronRight size={22} />
-                  </button>
-                </>
-              )}
-
-              {/* Compteur */}
-              {totalSlides > 1 && (
-                <div className="absolute bottom-4 right-4 z-20 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-sm text-white text-xs font-mono">
-                  {safeIdx + 1} / {totalSlides}
-                </div>
-              )}
-            </div>
-
-            {/* Miniatures */}
-            {totalSlides > 1 && (
-              <div className="flex gap-2 overflow-x-auto pb-1" style={{ scrollbarWidth: 'none' }}>
-                {allMedia.map((item, i) => (
-                  item.type === 'image' ? (
-                    <button
-                      key={i}
-                      onClick={() => setMediaIdx(i)}
-                      className={`flex-shrink-0 w-16 h-16 rounded-xl overflow-hidden border-2 transition-all
-                        ${safeIdx === i ? 'border-gaming-purple shadow-purple-glow' : 'border-gaming-border hover:border-gaming-purple/50'}`}>
-                      <img
-                        src={item.url}
-                        alt={`Miniature ${i + 1}`}
-                        loading="lazy"
-                        className="w-full h-full object-cover"
-                      />
-                    </button>
-                  ) : (
-                    <VideoThumb
-                      key={i}
-                      url={item.url}
-                      onClick={() => setMediaIdx(i)}
-                      className={`flex-shrink-0 w-16 h-16 ${safeIdx === i ? '!border-gaming-purple shadow-purple-glow' : ''}`}
-                    />
-                  )
-                ))}
-              </div>
-            )}
-          </div>
-
-          {/* ── Informations produit ── */}
-          <div className="space-y-6">
-            {/* Badges */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant={condVariant}>{cond?.label}</Badge>
-              <Badge variant="default">{product.categoryName}</Badge>
-              {product.featured && <Badge variant="gold">⭐ Vedette</Badge>}
-            </div>
-
-            <div>
-              <h1 className="font-display font-bold text-2xl sm:text-3xl text-white leading-tight mb-3">
-                {product.title}
-              </h1>
-              <div className="flex items-center gap-4 text-sm text-gaming-text-muted flex-wrap">
-                <span className="flex items-center gap-1"><Eye size={14}/> {product.views} vues</span>
-                <span className="flex items-center gap-1"><Heart size={14}/> {product.likes + (liked ? 1 : 0)} likes</span>
-                <span>Publié {formatRelativeDate(product.createdAt)}</span>
-              </div>
-            </div>
-
-            {/* Prix */}
-            <div className="p-5 gaming-card">
-              <p className="font-mono font-bold text-3xl text-gaming-gold">{formatPrice(product.price)}</p>
-              {product.originalPrice && (
-                <div className="flex items-center gap-3 mt-1.5">
-                  <span className="text-sm text-gaming-text-muted line-through font-mono">{formatPrice(product.originalPrice)}</span>
-                  <span className="text-sm text-gaming-green font-heading font-semibold">
-                    Économie de {formatPrice(product.originalPrice - product.price)}
-                  </span>
-                </div>
-              )}
-            </div>
-
-            {/* Localisation */}
-            <div className="flex items-center gap-2 text-gaming-text-muted">
-              <MapPin size={16} className="text-gaming-purple" />
-              <span className="font-body text-sm">{product.location}</span>
-            </div>
-
-            {/* Boutons d'action */}
-            <div className="flex flex-col gap-3">
-              <Button size="lg" variant="primary" fullWidth icon={<ShoppingCart size={18}/>}
-                onClick={() => addItem(product)}>
-                Ajouter au panier
-              </Button>
-              <Link to={`/messages?product=${product.id}`} className="block">
-                <Button size="lg" variant="secondary" fullWidth icon={<MessageCircle size={18}/>}>
-                  Contacter le vendeur
-                </Button>
-              </Link>
-              <button
-                onClick={() => { navigator.clipboard?.writeText(window.location.href); toast.success('Lien copié !') }}
-                className="flex items-center justify-center gap-2 py-2.5 text-sm text-gaming-text-muted hover:text-gaming-purple transition-colors font-heading">
-                <Share2 size={16}/> Partager cette annonce
-              </button>
-            </div>
-
-            {/* Sécurité */}
-            <div className="flex items-start gap-3 p-4 rounded-xl bg-gaming-neon/5 border border-gaming-neon/20">
-              <Shield size={18} className="text-gaming-neon flex-shrink-0 mt-0.5" />
-              <div>
-                <p className="text-gaming-neon text-sm font-heading font-semibold">Transaction sécurisée</p>
-                <p className="text-gaming-text-muted text-xs font-body mt-0.5">
-                  Paiement via Wave, Orange Money, MTN ou Moov Money. Remboursement garanti en cas de problème.
-                </p>
-              </div>
-            </div>
-
-            {/* Vendeur */}
-            <div className="gaming-card p-5">
-              <p className="text-xs text-gaming-text-muted font-heading font-semibold uppercase tracking-wider mb-4">Vendeur</p>
-              <div className="flex items-center gap-4">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gaming-purple to-gaming-cyan flex items-center justify-center text-lg font-bold text-white flex-shrink-0">
-                  {product.seller.name[0]}
-                </div>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <p className="font-heading font-semibold text-gaming-text-primary">{product.seller.name}</p>
-                    {product.seller.verified && (
-                      <span className="flex items-center gap-1 text-xs text-gaming-cyan">
-                        <CheckCircle size={12}/> Vérifié
-                      </span>
-                    )}
-                  </div>
-                  <div className="flex items-center gap-1 mt-0.5">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} size={11}
-                        className={i < Math.floor(product.seller.rating) ? 'fill-gaming-gold text-gaming-gold' : 'text-gaming-border'} />
-                    ))}
-                    <span className="text-xs text-gaming-gold font-mono ml-1">{product.seller.rating}</span>
-                    <span className="text-xs text-gaming-text-muted font-body ml-1">({product.seller.reviewCount} avis)</span>
-                  </div>
-                  <p className="text-xs text-gaming-text-muted font-body mt-0.5 flex items-center gap-1">
-                    <MapPin size={10}/> {product.seller.location}
-                  </p>
-                </div>
-                <Link to={`/profil/${product.seller.id}`}>
-                  <Button size="sm" variant="secondary">Voir le profil</Button>
-                </Link>
-              </div>
-            </div>
-          </div>
+        {/* Location */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 4, marginTop: 10, color: '#6b6b8a', fontSize: 12, fontFamily: 'Inter, sans-serif' }}>
+          <MapPin size={13} style={{ color: '#8b00ff' }} />
+          {product.location}
         </div>
 
         {/* Description */}
-        <div className="gaming-card p-6 mb-12">
-          <h2 className="font-heading font-semibold text-gaming-text-primary text-lg mb-4">Description</h2>
-          <p className="text-gaming-text-secondary font-body leading-relaxed whitespace-pre-wrap">{product.description}</p>
+        <div style={{ marginTop: 14, padding: 14, background: '#1a0038', borderRadius: 12, border: '1px solid rgba(139,0,255,0.2)' }}>
+          <p style={{ margin: 0, fontSize: 11, fontWeight: 700, color: '#6b6b8a', textTransform: 'uppercase', letterSpacing: 1, fontFamily: 'Space Grotesk, sans-serif' }}>
+            Description
+          </p>
+          <p style={{ margin: '8px 0 0', fontSize: 14, color: '#a0a0b0', lineHeight: 1.6, fontFamily: 'Inter, sans-serif' }}>
+            {product.description}
+          </p>
         </div>
 
-        {/* Produits similaires */}
+        {/* Seller */}
+        <div style={{ marginTop: 10, padding: 14, background: '#1a0038', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12, border: '1px solid rgba(139,0,255,0.2)' }}>
+          <div style={{
+            width: 44, height: 44, borderRadius: '50%',
+            background: 'linear-gradient(135deg, #8b00ff, #ff00c8)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 18, fontWeight: 800, color: '#fff',
+            fontFamily: 'Rajdhani, sans-serif', flexShrink: 0,
+          }}>
+            {product.seller?.name?.[0] || '?'}
+          </div>
+          <div style={{ flex: 1 }}>
+            <p style={{ margin: 0, fontWeight: 700, fontSize: 14, fontFamily: 'Rajdhani, sans-serif', color: '#fff' }}>
+              {product.seller?.name}
+            </p>
+            <div style={{ display: 'flex', gap: 1, marginTop: 2 }}>
+              {[1,2,3,4,5].map(s => (
+                <span key={s} style={{ color: s <= Math.floor(product.seller?.rating || 4) ? '#ffd700' : '#2d0060', fontSize: 12 }}>★</span>
+              ))}
+              <span style={{ fontSize: 11, color: '#6b6b8a', marginLeft: 4, fontFamily: 'Inter, sans-serif' }}>
+                ({product.seller?.reviewCount || 0} avis)
+              </span>
+            </div>
+            {product.seller?.verified && (
+              <span style={{ fontSize: 10, color: '#00ff88', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif' }}>
+                ✓ Vendeur certifié
+              </span>
+            )}
+          </div>
+          <Link
+            to={`/messages`}
+            style={{
+              background: '#8b00ff', color: '#fff', border: 'none',
+              borderRadius: 20, padding: '8px 14px', cursor: 'pointer',
+              fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5,
+              textDecoration: 'none', boxShadow: '0 0 15px rgba(139,0,255,0.3)',
+              fontFamily: 'Space Grotesk, sans-serif',
+            }}
+          >
+            <MessageCircle size={14} /> Contacter
+          </Link>
+        </div>
+
+        {/* Similar products */}
         {similar.length > 0 && (
-          <div>
-            <h2 className="section-title mb-7">Produits similaires</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {similar.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
+          <div style={{ marginTop: 20 }}>
+            <p style={{ margin: '0 0 10px', fontWeight: 800, fontSize: 15, fontFamily: 'Rajdhani, sans-serif', color: '#fff' }}>
+              Annonces similaires
+            </p>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+              {similar.slice(0, 4).map(p => (
+                <ProductCard key={p.id} product={p} />
+              ))}
             </div>
           </div>
         )}
+      </div>
+
+      {/* ── Fixed bottom CTA ── */}
+      <div style={{
+        position: 'fixed', bottom: 64, left: '50%', transform: 'translateX(-50%)',
+        width: 'min(440px, 100%)', padding: '10px 14px',
+        background: 'rgba(10,0,16,0.95)', borderTop: '1px solid rgba(139,0,255,0.2)',
+        backdropFilter: 'blur(20px)', zIndex: 30,
+      }}>
+        <Link
+          to="/messages"
+          style={{
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8,
+            width: '100%', background: 'linear-gradient(135deg, #8b00ff, #ff00c8)',
+            color: '#fff', border: 'none', borderRadius: 12,
+            padding: '13px 0', fontWeight: 800, fontSize: 14, cursor: 'pointer',
+            fontFamily: 'Rajdhani, sans-serif', textDecoration: 'none',
+            boxShadow: '0 0 25px rgba(139,0,255,0.4)',
+          }}
+        >
+          <MessageCircle size={16} /> Discuter avec le vendeur
+        </Link>
       </div>
     </div>
   )
