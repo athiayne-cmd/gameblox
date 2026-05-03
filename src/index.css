@@ -5,13 +5,13 @@
 @layer base {
   * { box-sizing: border-box; }
 
-  html, body, #root {
-    height: 100%;
-  }
+  html { height: 100%; }
+  body { height: 100%; }
+  #root { height: 100%; display: flex; flex-direction: column; }
 
   body {
     @apply bg-gaming-bg text-gaming-text-primary font-body;
-    overflow: hidden;
+    overflow-x: hidden;
     background-image:
       radial-gradient(ellipse at 15% 25%, rgba(139,0,255,0.07) 0%, transparent 55%),
       radial-gradient(ellipse at 85% 75%, rgba(255,0,200,0.05) 0%, transparent 55%);
