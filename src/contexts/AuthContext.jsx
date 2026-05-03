@@ -48,11 +48,12 @@ export function AuthProvider({ children }) {
     if (error) throw error
     if (data.user) {
       await supabase.from('profiles').insert({
-        id:        data.user.id,
-        full_name: fullName,
-        username:  email.split('@')[0],
+        id:         data.user.id,
+        full_name:  fullName,
+        username:   email.split('@')[0],
         phone,
         location,
+        is_premium: false,
       })
     }
     toast.success('Compte créé ! Vérifiez votre email.')

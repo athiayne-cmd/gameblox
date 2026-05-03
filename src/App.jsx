@@ -11,6 +11,8 @@ import Checkout from './pages/Checkout'
 import Profile from './pages/Profile'
 import Messages from './pages/Messages'
 import NotFound from './pages/NotFound'
+import PaymentSuccess from './pages/PaymentSuccess'
+import Subscription from './pages/Subscription'
 
 export default function App() {
   return (
@@ -20,8 +22,10 @@ export default function App() {
         <Route path="/marketplace"   element={<Marketplace />} />
         <Route path="/produit/:slug" element={<ProductDetail />} />
         <Route path="/vendre"        element={<Sell />} />
+        <Route path="/abonnement"    element={<Subscription />} />
         <Route path="/panier"        element={<Cart />} />
-        <Route path="/paiement"      element={<Checkout />} />
+        <Route path="/paiement"        element={<Checkout />} />
+        <Route path="/paiement-succes" element={<PaymentSuccess />} />
         <Route path="/messages"      element={<Messages />} />
         <Route path="/profil/:id"    element={<Profile />} />
         <Route path="*"              element={<NotFound />} />

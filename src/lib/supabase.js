@@ -20,8 +20,41 @@ export const supabase = createClient(supabaseUrl, supabaseKey)
     rating        numeric(3,2) default 0,
     review_count  int default 0,
     is_verified   boolean default false,
+    is_premium    boolean default false,
     created_at    timestamptz default now()
   );
+
+  -- Si la table existe déjà, ajoute juste la colonne :
+  -- alter table profiles add column if not exists is_premium boolean default false;
+
+  -- ── RLS : activer Row Level Security sur products ──────────────────────
+  alter table products enable row level security;
+
+  -- Lecture publique
+  create policy "products_select_public" on products
+    for select using (true);
+
+  -- INSERT : les utilisateurs gratuits sont limités à 1 produit
+  create policy "products_insert_limit" on products
+    for insert with check (
+      auth.uid() = seller_id
+      and (
+        (select is_premium from profiles where id = auth.uid()) = true
+        or
+        (select count(*) from products where seller_id = auth.uid()) < 1
+      )
+    );
+
+  -- UPDATE : seuls les comptes Premium peuvent modifier leurs annonces
+  create policy "products_update_premium_only" on products
+    for update using (
+      auth.uid() = seller_id
+      and (select is_premium from profiles where id = auth.uid()) = true
+    );
+
+  -- DELETE : le vendeur peut toujours supprimer sa propre annonce
+  create policy "products_delete_own" on products
+    for delete using (auth.uid() = seller_id);
 
   -- Produits / annonces
   create table products (

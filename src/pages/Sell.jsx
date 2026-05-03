@@ -1,12 +1,15 @@
-import { useState, useRef } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { X, CheckCircle, ArrowRight, ArrowLeft, Camera, Video, Link as LinkIcon, Play } from 'lucide-react'
+import { X, CheckCircle, ArrowRight, ArrowLeft, Camera, Video, Zap, Lock } from 'lucide-react'
+import { Link, useNavigate } from 'react-router-dom'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import VideoPlayer from '../components/ui/VideoPlayer'
 import { CATEGORIES } from '../utils/mockData'
 import { formatPrice } from '../utils/formatters'
 import { validateVideoSize, getVideoDuration, parseVideoUrl } from '../lib/storage'
+import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 import toast from 'react-hot-toast'
 
 const CONDITIONS = [
@@ -25,14 +28,39 @@ const VILLES_SN = [
 ]
 
 export default function Sell() {
-  const [etape, setEtape]   = useState(0)
-  const [termine, setTermine] = useState(false)
-  const [form, setForm]     = useState({
+  const { user, profile } = useAuth()
+  const navigate = useNavigate()
+
+  const [etape, setEtape]         = useState(0)
+  const [termine, setTermine]     = useState(false)
+  const [checkingLimit, setCheckingLimit] = useState(true)
+  const [limitReached, setLimitReached]   = useState(false)
+  const [form, setForm] = useState({
     category: '', title: '', description: '', condition: '',
     images: [], videoFile: null, videoUrl: '', price: '', location: '', phone: ''
   })
-  const [videoMode, setVideoMode] = useState('url') // 'url' | 'upload'
+  const [videoMode, setVideoMode]     = useState('url')
   const [videoPreview, setVideoPreview] = useState(null)
+
+  useEffect(() => {
+    if (!user) { navigate('/connexion'); return }
+    checkProductLimit()
+  }, [user])
+
+  async function checkProductLimit() {
+    if (profile?.is_premium) { setCheckingLimit(false); return }
+    try {
+      const { count } = await supabase
+        .from('products')
+        .select('id', { count: 'exact', head: true })
+        .eq('seller_id', user.id)
+      setLimitReached((count ?? 0) >= 1)
+    } catch {
+      // En cas d'erreur réseau, on laisse passer
+    } finally {
+      setCheckingLimit(false)
+    }
+  }
 
   function set(key, val) { setForm(f => ({ ...f, [key]: val })) }
 
@@ -78,6 +106,39 @@ export default function Sell() {
     toast.success(`${fichiers.length} photo(s) ajoutée(s)`)
   }
 
+  if (checkingLimit) return (
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="w-8 h-8 rounded-full border-2 border-gaming-purple border-t-transparent animate-spin" />
+    </div>
+  )
+
+  if (limitReached) return (
+    <div className="min-h-screen flex items-center justify-center px-4">
+      <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }}
+        className="text-center max-w-sm p-8 gaming-card border-gaming-gold/30">
+        <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gaming-gold/10 border border-gaming-gold/30 flex items-center justify-center">
+          <Lock size={28} className="text-gaming-gold" />
+        </div>
+        <h2 className="font-display font-bold text-2xl text-white mb-3">
+          Limite gratuite atteinte
+        </h2>
+        <p className="text-gaming-text-muted font-body leading-relaxed mb-6">
+          Vous avez atteint la limite gratuite.<br />
+          Passez Premium pour publier des<br />
+          annonces illimitées&nbsp;🚀
+        </p>
+        <Link to="/abonnement">
+          <Button fullWidth size="lg">
+            <Zap size={16} className="mr-2" /> Devenir Premium
+          </Button>
+        </Link>
+        <Link to="/marketplace" className="block mt-4 text-sm text-gaming-text-muted hover:text-gaming-purple transition-colors font-heading">
+          Voir le marketplace
+        </Link>
+      </motion.div>
+    </div>
+  )
+
   if (termine) return (
     <div className="min-h-screen flex items-center justify-center px-4">
       <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
@@ -94,7 +155,9 @@ export default function Sell() {
         <div className="flex flex-col gap-3">
           <Button fullWidth onClick={() => {
             setTermine(false); setEtape(0)
-            setForm({ category:'', title:'', description:'', condition:'', images:[], price:'', location:'', phone:'' })
+            setForm({ category:'', title:'', description:'', condition:'', images:[], videoFile:null, videoUrl:'', price:'', location:'', phone:'' })
+            setCheckingLimit(true)
+            checkProductLimit()
           }}>
             Publier une autre annonce
           </Button>
@@ -343,6 +406,19 @@ export default function Sell() {
           conditions d'utilisation de GameBlox.
         </p>
       </div>
+      {!profile?.is_premium && (
+        <div className="flex items-start gap-3 p-4 rounded-xl bg-gaming-gold/5 border border-gaming-gold/20">
+          <Lock size={15} className="text-gaming-gold flex-shrink-0 mt-0.5" />
+          <p className="text-xs text-gaming-text-muted font-body leading-relaxed">
+            <span className="text-gaming-gold font-heading font-semibold">Compte gratuit —</span>{' '}
+            Cette annonce ne pourra pas être modifiée après publication.{' '}
+            <Link to="/abonnement" className="text-gaming-gold underline hover:no-underline">
+              Passez Premium
+            </Link>{' '}
+            pour débloquer la modification illimitée.
+          </p>
+        </div>
+      )}
     </div>,
   ]
 
