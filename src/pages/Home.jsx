@@ -64,6 +64,9 @@ export default function Home() {
         </div>
       </div>
 
+      {/* ── Stories ── */}
+      <Stories />
+
       {/* ── Category pills ── */}
       <div style={{
         padding: '14px 0 6px',
