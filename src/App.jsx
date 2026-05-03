@@ -12,7 +12,9 @@ import Profile from './pages/Profile'
 import Messages from './pages/Messages'
 import NotFound from './pages/NotFound'
 import PaymentSuccess from './pages/PaymentSuccess'
-import Subscription from './pages/Subscription'
+import Subscription   from './pages/Subscription'
+import PremiumSuccess from './pages/PremiumSuccess'
+import PremiumCancel  from './pages/PremiumCancel'
 
 export default function App() {
   return (
