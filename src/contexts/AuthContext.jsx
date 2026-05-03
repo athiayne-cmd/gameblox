@@ -46,8 +46,9 @@ export function AuthProvider({ children }) {
   async function signUp({ email, password, fullName, phone, location }) {
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) throw error
+
     if (data.user) {
-      await supabase.from('profiles').insert({
+      const { error: profileError } = await supabase.from('profiles').insert({
         id:         data.user.id,
         full_name:  fullName,
         username:   email.split('@')[0],
@@ -55,8 +56,14 @@ export function AuthProvider({ children }) {
         location,
         is_premium: false,
       })
+      if (profileError) {
+        console.error('Erreur création profil:', profileError.message)
+      }
     }
-    toast.success('Compte créé ! Vérifiez votre email.')
+
+    // data.session est null si Supabase demande une confirmation email
+    const needsConfirmation = !data.session
+    return { needsConfirmation }
   }
 
   async function signIn({ email, password }) {

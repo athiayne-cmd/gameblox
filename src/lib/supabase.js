@@ -27,6 +27,21 @@ export const supabase = createClient(supabaseUrl, supabaseKey)
   -- Si la table existe déjà, ajoute juste la colonne :
   -- alter table profiles add column if not exists is_premium boolean default false;
 
+  -- ── RLS : activer Row Level Security sur profiles ─────────────────────
+  alter table profiles enable row level security;
+
+  -- Tout le monde peut lire les profils (marketplace)
+  create policy "profiles_select_public" on profiles
+    for select using (true);
+
+  -- Un utilisateur peut créer son propre profil (nécessaire à l'inscription)
+  create policy "profiles_insert_own" on profiles
+    for insert with check (auth.uid() = id);
+
+  -- Un utilisateur peut modifier son propre profil
+  create policy "profiles_update_own" on profiles
+    for update using (auth.uid() = id);
+
   -- ── RLS : activer Row Level Security sur products ──────────────────────
   alter table products enable row level security;
 

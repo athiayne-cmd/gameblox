@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Zap, Mail, Lock, User, Phone, MapPin, Eye, EyeOff } from 'lucide-react'
+import { Zap, Mail, Lock, User, Phone, CheckCircle2, Eye, EyeOff } from 'lucide-react'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import { useAuth } from '../contexts/AuthContext'
@@ -14,9 +14,10 @@ const VILLES = [
 ]
 
 export default function Register() {
-  const [form, setForm]    = useState({ fullName:'', email:'', phone:'', location:'', password:'', confirm:'' })
+  const [form, setForm]       = useState({ fullName:'', email:'', phone:'', location:'', password:'', confirm:'' })
   const [showPwd, setShowPwd] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [emailSent, setEmailSent] = useState(false)
   const { signUp }            = useAuth()
   const navigate              = useNavigate()
 
@@ -35,14 +36,19 @@ export default function Register() {
     if (form.password !== form.confirm) return toast.error('Les mots de passe ne correspondent pas')
     setLoading(true)
     try {
-      await signUp({
+      const { needsConfirmation } = await signUp({
         email:    form.email,
         password: form.password,
         fullName: form.fullName,
         phone:    form.phone,
         location: form.location,
       })
-      navigate('/')
+      if (needsConfirmation) {
+        setEmailSent(true)
+      } else {
+        toast.success('Compte créé !')
+        navigate('/')
+      }
     } catch (err) {
       const msg = ERREURS[err.message] || "Erreur lors de l'inscription. Réessaie."
       toast.error(msg)
@@ -50,6 +56,31 @@ export default function Register() {
       setLoading(false)
     }
   }
+
+  if (emailSent) return (
+    <div className="min-h-screen bg-gaming-bg grid-bg flex items-center justify-center px-4 relative overflow-hidden">
+      <div className="absolute top-1/4 right-1/4 w-96 h-96 bg-gaming-purple/15 rounded-full blur-[120px]" />
+      <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
+        className="relative z-10 text-center max-w-sm glass rounded-3xl p-10">
+        <div className="w-16 h-16 mx-auto mb-5 rounded-full bg-gaming-neon/10 border border-gaming-neon/30 flex items-center justify-center">
+          <CheckCircle2 size={32} className="text-gaming-neon" />
+        </div>
+        <h2 className="font-display font-bold text-2xl text-white mb-3">Vérifie ton email</h2>
+        <p className="text-gaming-text-muted font-body text-sm leading-relaxed mb-6">
+          Un lien de confirmation a été envoyé à{' '}
+          <span className="text-white font-heading font-semibold">{form.email}</span>.
+          <br /><br />
+          Clique sur le lien dans l'email pour activer ton compte, puis connecte-toi.
+        </p>
+        <Link to="/connexion">
+          <Button fullWidth>Se connecter</Button>
+        </Link>
+        <p className="text-xs text-gaming-text-muted mt-4 font-body">
+          Tu ne trouves pas l'email ? Vérifie ton dossier spam.
+        </p>
+      </motion.div>
+    </div>
+  )
 
   return (
     <div className="min-h-screen bg-gaming-bg grid-bg flex items-center justify-center px-4 py-12 relative overflow-hidden">
