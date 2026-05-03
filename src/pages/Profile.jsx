@@ -1,116 +1,145 @@
-import { useParams } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { Star, MapPin, CheckCircle, Package, MessageCircle, Calendar } from 'lucide-react'
+import { useParams, useNavigate } from 'react-router-dom'
+import { ArrowLeft, MapPin, Star, MessageCircle, CheckCircle, Package } from 'lucide-react'
 import { PRODUCTS, SELLERS } from '../utils/mockData'
-import { formatRelativeDate } from '../utils/formatters'
 import ProductCard from '../components/ui/ProductCard'
-import Button from '../components/ui/Button'
-import Badge from '../components/ui/Badge'
 
 export default function Profile() {
-  const { id } = useParams()
-  const seller = SELLERS.find(s => s.id === id) || SELLERS[0]
-  const listings = PRODUCTS.filter(p => p.seller.id === seller.id)
-
-  const stats = [
-    { label: 'Annonces',     value: listings.length,      icon: <Package size={16}/> },
-    { label: 'Note',         value: `${seller.rating}★`,  icon: <Star size={16}/> },
-    { label: 'Avis',         value: seller.reviewCount,   icon: <MessageCircle size={16}/> },
-  ]
+  const { id }     = useParams()
+  const navigate   = useNavigate()
+  const seller     = SELLERS.find(s => s.id === id) || SELLERS[0]
+  const listings   = PRODUCTS.filter(p => p.seller.id === seller.id)
 
   return (
-    <div className="min-h-screen py-10">
-      <div className="page-container">
+    <div className="min-h-full" style={{ background: '#0a0010' }}>
 
-        {/* Cover */}
-        <div className="relative h-48 rounded-3xl overflow-hidden mb-16 bg-gradient-to-br from-gaming-purple/40 via-gaming-surface to-gaming-cyan/20 grid-bg">
-          <div className="absolute inset-0 bg-gradient-to-t from-gaming-bg/60 to-transparent" />
+      {/* Header */}
+      <div style={{
+        position: 'sticky', top: 0, zIndex: 10,
+        background: '#120020', padding: '12px 14px',
+        display: 'flex', alignItems: 'center', gap: 12,
+        borderBottom: '1px solid rgba(139,0,255,0.2)',
+      }}>
+        <button
+          onClick={() => navigate(-1)}
+          style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8b00ff', padding: 0 }}
+        >
+          <ArrowLeft size={22} />
+        </button>
+        <span style={{ fontWeight: 700, fontSize: 16, fontFamily: 'Rajdhani, sans-serif', color: '#fff' }}>
+          Profil vendeur
+        </span>
+      </div>
 
-          {/* Avatar */}
-          <div className="absolute -bottom-10 left-8">
-            <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-gaming-purple to-gaming-cyan flex items-center justify-center text-3xl font-bold text-white shadow-gaming-lg border-4 border-gaming-bg">
-              {seller.name[0]}
-            </div>
-          </div>
+      {/* Profile header */}
+      <div style={{
+        background: 'linear-gradient(135deg, #2d0060 0%, #1a0038 60%, #120020 100%)',
+        padding: '24px 20px 28px', textAlign: 'center', position: 'relative', overflow: 'hidden',
+      }}>
+        <div style={{
+          position: 'absolute', top: -30, right: -30,
+          width: 160, height: 160, borderRadius: '50%',
+          background: 'rgba(139,0,255,0.15)', filter: 'blur(60px)',
+        }} />
+
+        <div style={{
+          width: 72, height: 72, borderRadius: '50%',
+          background: 'linear-gradient(135deg, #8b00ff, #ff00c8)',
+          margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
+          fontSize: 28, fontWeight: 800, color: '#fff',
+          fontFamily: 'Rajdhani, sans-serif',
+          border: '3px solid rgba(139,0,255,0.5)',
+          boxShadow: '0 0 30px rgba(139,0,255,0.3)',
+          position: 'relative', zIndex: 1,
+        }}>
+          {seller.name[0]}
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8">
+        <h2 style={{ margin: '10px 0 2px', color: '#fff', fontFamily: 'Rajdhani, sans-serif', fontSize: 20, fontWeight: 800, position: 'relative', zIndex: 1 }}>
+          {seller.name}
+        </h2>
+        <p style={{ margin: 0, color: 'rgba(255,255,255,0.55)', fontSize: 12, fontFamily: 'Inter, sans-serif', position: 'relative', zIndex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 4 }}>
+          <MapPin size={12} style={{ color: '#8b00ff' }} /> {seller.location}
+        </p>
 
-          {/* Left: profile info */}
-          <div className="space-y-5">
-            <div className="gaming-card p-5 space-y-4">
-              <div>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <h1 className="font-heading font-bold text-xl text-white">{seller.name}</h1>
-                  {seller.verified && (
-                    <span className="flex items-center gap-1 text-xs text-gaming-cyan font-heading font-semibold">
-                      <CheckCircle size={13}/> Vérifié
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center gap-1 mt-1">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} size={13}
-                      className={i < Math.floor(seller.rating) ? 'fill-gaming-gold text-gaming-gold' : 'text-gaming-border'} />
-                  ))}
-                  <span className="text-sm text-gaming-gold font-mono ml-1">{seller.rating}</span>
-                  <span className="text-xs text-gaming-text-muted font-body">({seller.reviewCount} avis)</span>
-                </div>
-              </div>
-
-              <div className="flex items-center gap-2 text-gaming-text-muted">
-                <MapPin size={14} className="text-gaming-purple"/>
-                <span className="text-sm font-body">{seller.location}</span>
-              </div>
-
-              <div className="flex items-center gap-2 text-gaming-text-muted">
-                <Calendar size={14} className="text-gaming-cyan"/>
-                <span className="text-sm font-body">Membre depuis janvier 2023</span>
-              </div>
-
-              <div className="grid grid-cols-3 gap-3 pt-2 border-t border-gaming-border/40">
-                {stats.map(s => (
-                  <div key={s.label} className="text-center">
-                    <p className="font-display font-bold text-xl text-white">{s.value}</p>
-                    <p className="text-xs text-gaming-text-muted font-body">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-
-              <Button fullWidth variant="secondary" icon={<MessageCircle size={16}/>}>
-                Contacter
-              </Button>
-            </div>
-
-            {/* Badges */}
-            <div className="gaming-card p-5">
-              <h3 className="font-heading font-semibold text-gaming-text-primary text-sm mb-3">Badges</h3>
-              <div className="flex flex-wrap gap-2">
-                {seller.verified && <Badge variant="cyan">✓ Profil vérifié</Badge>}
-                {seller.rating >= 4.5 && <Badge variant="gold">⭐ Top vendeur</Badge>}
-                {seller.reviewCount >= 20 && <Badge variant="neon">🏆 +20 ventes</Badge>}
-                <Badge variant="purple">🎮 Gamer confirmé</Badge>
-              </div>
-            </div>
+        {seller.verified && (
+          <div style={{
+            marginTop: 8, display: 'inline-flex', alignItems: 'center', gap: 4,
+            background: 'rgba(0,255,136,0.1)', borderRadius: 20, padding: '3px 12px',
+            border: '1px solid rgba(0,255,136,0.25)', position: 'relative', zIndex: 1,
+          }}>
+            <CheckCircle size={12} style={{ color: '#00ff88' }} />
+            <span style={{ color: '#00ff88', fontSize: 11, fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif' }}>
+              Vendeur vérifié
+            </span>
           </div>
+        )}
+      </div>
 
-          {/* Right: listings */}
-          <div className="lg:col-span-2">
-            <h2 className="font-heading font-semibold text-gaming-text-primary text-lg mb-5">
-              Annonces de {seller.name.split(' ')[0]} ({listings.length})
-            </h2>
-            {listings.length === 0 ? (
-              <div className="gaming-card p-10 text-center">
-                <Package size={40} className="text-gaming-text-muted mx-auto mb-3 opacity-40"/>
-                <p className="text-gaming-text-muted font-body">Aucune annonce pour le moment</p>
-              </div>
-            ) : (
-              <div className="grid sm:grid-cols-2 gap-5">
-                {listings.map((p, i) => <ProductCard key={p.id} product={p} index={i} />)}
-              </div>
-            )}
-          </div>
+      <div style={{ padding: '14px 14px 20px' }}>
+
+        {/* Stats */}
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 14 }}>
+          {[
+            [listings.length, 'Annonces'],
+            [`${seller.rating}★`, 'Note'],
+            [seller.reviewCount, 'Avis'],
+          ].map(([val, label]) => (
+            <div key={label} style={{
+              background: '#1a0038', borderRadius: 12, padding: '12px 8px', textAlign: 'center',
+              border: '1px solid rgba(139,0,255,0.2)',
+            }}>
+              <p style={{ margin: 0, fontSize: 20, fontWeight: 900, color: '#aa33ff', fontFamily: 'Rajdhani, sans-serif' }}>
+                {val}
+              </p>
+              <p style={{ margin: 0, fontSize: 11, color: '#6b6b8a', fontFamily: 'Inter, sans-serif' }}>
+                {label}
+              </p>
+            </div>
+          ))}
         </div>
+
+        {/* Stars detail */}
+        <div style={{ background: '#1a0038', borderRadius: 12, padding: '14px', marginBottom: 12, border: '1px solid rgba(139,0,255,0.2)', display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div>
+            <div style={{ display: 'flex', gap: 2 }}>
+              {[1,2,3,4,5].map(s => (
+                <Star key={s} size={16} style={{ fill: s <= Math.floor(seller.rating) ? '#ffd700' : '#2d0060', color: s <= Math.floor(seller.rating) ? '#ffd700' : '#2d0060' }} />
+              ))}
+            </div>
+            <p style={{ margin: '4px 0 0', fontSize: 12, color: '#6b6b8a', fontFamily: 'Inter, sans-serif' }}>
+              {seller.rating}/5 basé sur {seller.reviewCount} avis
+            </p>
+          </div>
+          <button
+            onClick={() => {}}
+            style={{
+              marginLeft: 'auto', background: '#8b00ff', color: '#fff', border: 'none',
+              borderRadius: 20, padding: '8px 14px', cursor: 'pointer',
+              fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5,
+              fontFamily: 'Space Grotesk, sans-serif', boxShadow: '0 0 15px rgba(139,0,255,0.3)',
+            }}
+          >
+            <MessageCircle size={14} /> Contacter
+          </button>
+        </div>
+
+        {/* Listings */}
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 }}>
+          <p style={{ margin: 0, fontWeight: 800, fontSize: 15, fontFamily: 'Rajdhani, sans-serif', color: '#fff' }}>
+            Annonces ({listings.length})
+          </p>
+        </div>
+
+        {listings.length === 0 ? (
+          <div style={{ background: '#1a0038', borderRadius: 12, padding: '40px 20px', textAlign: 'center', border: '1px solid rgba(139,0,255,0.2)' }}>
+            <Package size={40} style={{ color: '#6b6b8a', margin: '0 auto' }} />
+            <p style={{ color: '#6b6b8a', marginTop: 10, fontFamily: 'Inter, sans-serif' }}>Aucune annonce</p>
+          </div>
+        ) : (
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+            {listings.map(p => <ProductCard key={p.id} product={p} />)}
+          </div>
+        )}
       </div>
     </div>
   )
