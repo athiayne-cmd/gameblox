@@ -24,7 +24,9 @@ export default function App() {
         <Route path="/marketplace"   element={<Marketplace />} />
         <Route path="/produit/:slug" element={<ProductDetail />} />
         <Route path="/vendre"        element={<Sell />} />
-        <Route path="/abonnement"    element={<Subscription />} />
+        <Route path="/abonnement"      element={<Subscription />} />
+        <Route path="/premium/success" element={<PremiumSuccess />} />
+        <Route path="/premium/cancel"  element={<PremiumCancel />} />
         <Route path="/panier"        element={<Cart />} />
         <Route path="/paiement"        element={<Checkout />} />
         <Route path="/paiement-succes" element={<PaymentSuccess />} />
