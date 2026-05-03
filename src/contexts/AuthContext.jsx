@@ -43,6 +43,11 @@ export function AuthProvider({ children }) {
     }
   }
 
+  async function refreshProfile() {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session?.user) await fetchProfile(session.user.id)
+  }
+
   async function signUp({ email, password, fullName, phone, location }) {
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) throw error
