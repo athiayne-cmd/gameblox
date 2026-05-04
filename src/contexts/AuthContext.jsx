@@ -34,8 +34,23 @@ export function AuthProvider({ children }) {
 
   async function fetchProfile(userId) {
     try {
-      const { data } = await supabase.from('profiles').select('*').eq('id', userId).single()
-      setProfile(data)
+      const { data, error } = await supabase.from('profiles').select('*').eq('id', userId).single()
+      if (error?.code === 'PGRST116') {
+        // Profil inexistant — le créer depuis les métadonnées auth
+        const { data: { user: authUser } } = await supabase.auth.getUser()
+        const meta = authUser?.user_metadata || {}
+        const { data: newProfile } = await supabase.from('profiles').insert({
+          id:         userId,
+          full_name:  meta.full_name  || authUser?.email?.split('@')[0] || '',
+          username:   meta.username   || authUser?.email?.split('@')[0] || '',
+          phone:      meta.phone      || '',
+          location:   meta.location   || '',
+          is_premium: false,
+        }).select().single()
+        setProfile(newProfile)
+      } else {
+        setProfile(data)
+      }
     } catch {
       // ignore
     } finally {
