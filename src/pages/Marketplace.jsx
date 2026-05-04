@@ -1,14 +1,40 @@
-import { useState, useMemo } from 'react'
+import { useState, useEffect, useMemo } from 'react'
 import { Search } from 'lucide-react'
 import ProductCard from '../components/ui/ProductCard'
 import { PRODUCTS, CATEGORIES } from '../utils/mockData'
+import { supabase } from '../lib/supabase'
+
+const MOCK_THRESHOLD = 10
 
 export default function Marketplace() {
   const [query, setQuery] = useState('')
   const [activeCategory, setActiveCategory] = useState('')
+  const [realProducts, setRealProducts] = useState([])
+  const [loadingReal, setLoadingReal] = useState(true)
+
+  useEffect(() => {
+    supabase
+      .from('products')
+      .select('*, profiles(full_name, username, location)')
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(100)
+      .then(({ data }) => {
+        setRealProducts((data || []).map(p => ({
+          ...p,
+          seller: { name: p.profiles?.full_name || p.profiles?.username || 'Vendeur', id: p.seller_id },
+        })))
+        setLoadingReal(false)
+      })
+      .catch(() => setLoadingReal(false))
+  }, [])
+
+  const combined = realProducts.length >= MOCK_THRESHOLD
+    ? realProducts
+    : [...realProducts, ...PRODUCTS.filter(m => !realProducts.some(r => r.slug === m.slug))]
 
   const results = useMemo(() => {
-    let list = [...PRODUCTS]
+    let list = [...combined]
     if (query.trim().length >= 2) {
       const q = query.toLowerCase()
       list = list.filter(p =>
@@ -21,7 +47,7 @@ export default function Marketplace() {
       list = list.filter(p => p.category === activeCategory)
     }
     return list
-  }, [query, activeCategory])
+  }, [query, activeCategory, combined])
 
   const showGrid = query.trim().length >= 2 || activeCategory
   const noResults = showGrid && results.length === 0
