@@ -177,7 +177,10 @@ export const PRODUCTS = [
   {
     id: '8', title: 'Casque Sony Pulse 3D — Parfait', slug: 'casque-sony-pulse-3d-parfait',
     price: 42000, originalPrice: 55000, category: 'casques', categoryName: 'Casques',
-    condition: 'excellent', images: [],
+    condition: 'excellent', images: [
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800&h=600&fit=crop&q=80',
+    ],
     description: 'Casque Sony Pulse 3D blanc, parfait état. Son 3D exceptionnel pour PS5. Vendu avec câble USB-C et chargeur.',
     seller: SELLERS[5], location: 'Ziguinchor', views: 321, likes: 28,
     createdAt: '2024-02-08', featured: false,
