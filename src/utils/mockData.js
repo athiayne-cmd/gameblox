@@ -243,7 +243,10 @@ export const PRODUCTS = [
   {
     id: '14', title: 'PS5 Digital Edition — Très bon', slug: 'ps5-digital-edition-tres-bon',
     price: 320000, originalPrice: 390000, category: 'ps5', categoryName: 'PlayStation 5',
-    condition: 'excellent', images: [],
+    condition: 'excellent', images: [
+      'https://images.unsplash.com/photo-1607853202273-797f1c22a38e?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1622297845775-5ff3fef71d13?w=800&h=600&fit=crop&q=80',
+    ],
     description: "PS5 Digital Edition blanc très bon état. Inclut manette, câbles et notice. Quelques mois d'utilisation seulement.",
     seller: SELLERS[5], location: 'Ziguinchor', views: 789, likes: 62,
     createdAt: '2024-01-30', featured: false,
