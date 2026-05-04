@@ -367,16 +367,11 @@ export default function Sell() {
         onChange={e => set('phone', e.target.value)}
         placeholder="Ex : +221 77 XXX XX XX" type="tel" />
 
-      <div className="p-4 rounded-xl bg-gaming-purple/5 border border-gaming-purple/20 space-y-2">
-        <p className="text-sm font-heading font-semibold text-gaming-text-primary">Commission GameBlox</p>
+      <div className="p-4 rounded-xl bg-gaming-neon/5 border border-gaming-neon/20 space-y-1.5">
+        <p className="text-sm font-heading font-semibold text-gaming-neon">💵 Paiement à la livraison</p>
         <p className="text-xs text-gaming-text-muted font-body leading-relaxed">
-          Publication gratuite. Une commission de 3% est prélevée uniquement lorsque ton produit est vendu.
+          Le vendeur gère ses paiements directement avec l'acheteur. GameBlox ne prélève aucune commission.
         </p>
-        {form.price && (
-          <p className="text-sm text-gaming-gold font-mono font-bold">
-            Tu recevras : {formatPrice(Math.round(Number(form.price) * 0.97))}
-          </p>
-        )}
       </div>
     </div>,
 
