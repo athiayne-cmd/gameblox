@@ -37,6 +37,7 @@ export default function App() {
         <Route path="/messages"        element={<Messages />} />
         <Route path="/profil"          element={<MyProfile />} />
         <Route path="/profil/:id"      element={<Profile />} />
+        <Route path="/partenaires"     element={<Partners />} />
         <Route path="*"                element={<NotFound />} />
       </Route>
       <Route path="/connexion"   element={<Login />} />
