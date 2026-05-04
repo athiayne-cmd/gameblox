@@ -62,6 +62,13 @@ export default function MyProfile() {
       sub: '3 nouvelles',
       action: () => {},
     },
+    {
+      icon: Star,
+      label: 'Nos Partenaires',
+      sub: 'PlayStation · Xbox · Nintendo · Razer',
+      action: () => navigate('/partenaires'),
+      gold: true,
+    },
   ]
 
   async function handleSignOut() {
