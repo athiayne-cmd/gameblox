@@ -232,7 +232,10 @@ export const PRODUCTS = [
   {
     id: '13', title: 'Zelda : Tears of the Kingdom — Switch', slug: 'zelda-tears-of-the-kingdom',
     price: 25000, originalPrice: 38000, category: 'jeux', categoryName: 'Jeux CD',
-    condition: 'excellent', images: [],
+    condition: 'excellent', images: [
+      'https://images.unsplash.com/photo-1585345235009-ccf2584beaff?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1511512578047-dfb367046420?w=800&h=600&fit=crop&q=80',
+    ],
     description: "Zelda Tears of the Kingdom pour Nintendo Switch. Excellent état, boîte et cartouche incluses. Un jeu incroyable.",
     seller: SELLERS[4], location: 'Kaolack', views: 412, likes: 55,
     createdAt: '2024-02-17', featured: false,
