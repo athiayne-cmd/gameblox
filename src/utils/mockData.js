@@ -155,7 +155,10 @@ export const PRODUCTS = [
   {
     id: '6', title: 'Nintendo Switch OLED — Neuf', slug: 'nintendo-switch-oled-neuf',
     price: 195000, originalPrice: null, category: 'nintendo', categoryName: 'Nintendo',
-    condition: 'new', images: [],
+    condition: 'new', images: [
+      'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=800&h=600&fit=crop&q=80',
+    ],
     description: "Nintendo Switch OLED Blanc, neuve dans sa boîte. Jamais utilisée. Garantie 1 an. Achetée au Sénégal.",
     seller: SELLERS[4], location: 'Kaolack', views: 432, likes: 67,
     createdAt: '2024-02-20', featured: true, sponsored: 'nintendo',
