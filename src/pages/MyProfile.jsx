@@ -200,14 +200,16 @@ export default function MyProfile() {
               width: '100%', textAlign: 'left', border: '1px solid rgba(139,0,255,0.2)',
               boxShadow: '0 1px 8px rgba(0,0,0,0.4)', transition: 'border-color 0.15s',
             }}
-            onMouseEnter={e => e.currentTarget.style.borderColor = 'rgba(139,0,255,0.5)'}
-            onMouseLeave={e => e.currentTarget.style.borderColor = 'rgba(139,0,255,0.2)'}
+            onMouseEnter={e => e.currentTarget.style.borderColor = item.gold ? 'rgba(255,215,0,0.5)' : 'rgba(139,0,255,0.5)'}
+            onMouseLeave={e => e.currentTarget.style.borderColor = item.gold ? 'rgba(255,215,0,0.2)' : 'rgba(139,0,255,0.2)'}
           >
             <div style={{
               width: 36, height: 36,
-              background: 'rgba(139,0,255,0.15)', borderRadius: 10,
+              background: item.gold ? 'rgba(255,215,0,0.1)' : 'rgba(139,0,255,0.15)',
+              borderRadius: 10,
               display: 'flex', alignItems: 'center', justifyContent: 'center',
-              color: '#8b00ff', border: '1px solid rgba(139,0,255,0.3)',
+              color: item.gold ? '#ffd700' : '#8b00ff',
+              border: item.gold ? '1px solid rgba(255,215,0,0.3)' : '1px solid rgba(139,0,255,0.3)',
             }}>
               <item.icon size={17} />
             </div>
