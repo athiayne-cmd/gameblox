@@ -1,7 +1,7 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { Zap, Mail, Lock, User, Phone, CheckCircle2, Eye, EyeOff } from 'lucide-react'
+import { Zap, Mail, Lock, User, Phone, CheckCircle2, Eye, EyeOff, Camera } from 'lucide-react'
 import Button from '../components/ui/Button'
 import Input from '../components/ui/Input'
 import { useAuth } from '../contexts/AuthContext'
@@ -14,14 +14,25 @@ const VILLES = [
 ]
 
 export default function Register() {
-  const [form, setForm]       = useState({ fullName:'', email:'', phone:'', location:'', password:'', confirm:'' })
-  const [showPwd, setShowPwd] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const [form, setForm]         = useState({ fullName:'', email:'', phone:'', location:'', password:'', confirm:'' })
+  const [showPwd, setShowPwd]   = useState(false)
+  const [loading, setLoading]   = useState(false)
   const [emailSent, setEmailSent] = useState(false)
-  const { signUp }            = useAuth()
-  const navigate              = useNavigate()
+  const [avatar, setAvatar]     = useState(null)
+  const [avatarPreview, setAvatarPreview] = useState(null)
+  const fileRef                 = useRef(null)
+  const { signUp }              = useAuth()
+  const navigate                = useNavigate()
 
   function set(k, v) { setForm(f => ({ ...f, [k]: v })) }
+
+  function handleAvatarChange(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) { toast.error('Image trop lourde (max 5 Mo)'); return }
+    setAvatar(file)
+    setAvatarPreview(URL.createObjectURL(file))
+  }
 
   const ERREURS = {
     'User already registered':   'Un compte existe déjà avec cet email.',
@@ -37,11 +48,12 @@ export default function Register() {
     setLoading(true)
     try {
       const { needsConfirmation } = await signUp({
-        email:    form.email,
-        password: form.password,
-        fullName: form.fullName,
-        phone:    form.phone,
-        location: form.location,
+        email:      form.email,
+        password:   form.password,
+        fullName:   form.fullName,
+        phone:      form.phone,
+        location:   form.location,
+        avatarFile: avatar,
       })
       if (needsConfirmation) {
         setEmailSent(true)
@@ -101,9 +113,54 @@ export default function Register() {
 
         <div className="glass rounded-3xl p-8 shadow-gaming-lg">
           <h1 className="font-display font-bold text-2xl text-white mb-1">Créer un compte</h1>
-          <p className="text-gaming-text-muted font-body text-sm mb-7">
+          <p className="text-gaming-text-muted font-body text-sm mb-6">
             Rejoins la communauté gaming — c'est gratuit !
           </p>
+
+          {/* ── Avatar upload ── */}
+          <div className="flex flex-col items-center mb-6">
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={handleAvatarChange}
+            />
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              style={{
+                width: 84, height: 84, borderRadius: '50%',
+                background: avatarPreview ? 'transparent' : 'rgba(139,0,255,0.1)',
+                border: avatarPreview ? '3px solid #8b00ff' : '2px dashed rgba(139,0,255,0.5)',
+                cursor: 'pointer', position: 'relative', overflow: 'hidden',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'border-color 0.2s',
+              }}
+            >
+              {avatarPreview ? (
+                <img src={avatarPreview} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              ) : (
+                <div style={{ textAlign: 'center' }}>
+                  <Camera size={24} style={{ color: '#8b00ff', margin: '0 auto' }} />
+                  <p style={{ fontSize: 10, color: '#8b00ff', marginTop: 4, fontFamily: 'Space Grotesk, sans-serif', fontWeight: 600 }}>
+                    Photo
+                  </p>
+                </div>
+              )}
+              {avatarPreview && (
+                <div style={{
+                  position: 'absolute', bottom: 0, left: 0, right: 0,
+                  background: 'rgba(0,0,0,0.5)', padding: '4px 0', textAlign: 'center',
+                }}>
+                  <Camera size={12} style={{ color: '#fff' }} />
+                </div>
+              )}
+            </button>
+            <p style={{ marginTop: 6, fontSize: 11, color: '#6b6b8a', fontFamily: 'Inter, sans-serif' }}>
+              {avatarPreview ? 'Clique pour changer' : 'Ajoute une photo (optionnel)'}
+            </p>
+          </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <Input label="Nom complet *" value={form.fullName}
