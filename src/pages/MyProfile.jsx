@@ -115,9 +115,9 @@ export default function MyProfile() {
   }
 
   const MENU_ITEMS = [
-    { icon: Heart,   label: 'Mes favoris',     sub: '0 produit',        action: () => {} },
-    { icon: Bell,    label: 'Notifications',   sub: '0 nouvelle',       action: () => {} },
-    { icon: Star,    label: 'Nos Partenaires', sub: 'PlayStation · Xbox · Nintendo · Razer', action: () => navigate('/partenaires'), gold: true },
+    { icon: Heart, label: 'Mes favoris',     sub: `${favCount} produit${favCount > 1 ? 's' : ''}`,       action: () => navigate('/favoris') },
+    { icon: Bell,  label: 'Notifications',   sub: `${notifCount} nouvelle${notifCount > 1 ? 's' : ''}`,  action: () => navigate('/notifications'), badge: notifCount > 0 },
+    { icon: Star,  label: 'Nos Partenaires', sub: 'PlayStation · Xbox · Nintendo · Razer',               action: () => navigate('/partenaires'), gold: true },
   ]
 
   return (
