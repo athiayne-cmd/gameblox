@@ -197,7 +197,8 @@ export default function MyProfile() {
             style={{
               background: '#1a0038', borderRadius: 12, padding: '13px 14px', marginBottom: 8,
               display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer',
-              width: '100%', textAlign: 'left', border: '1px solid rgba(139,0,255,0.2)',
+              width: '100%', textAlign: 'left',
+              border: item.gold ? '1px solid rgba(255,215,0,0.2)' : '1px solid rgba(139,0,255,0.2)',
               boxShadow: '0 1px 8px rgba(0,0,0,0.4)', transition: 'border-color 0.15s',
             }}
             onMouseEnter={e => e.currentTarget.style.borderColor = item.gold ? 'rgba(255,215,0,0.5)' : 'rgba(139,0,255,0.5)'}
