@@ -147,7 +147,7 @@ export const PRODUCTS = [
     description: "Xbox Series X en parfait état. Vendue avec 1 manette sans-fil et tous les câbles d'origine. Aucun problème. Rarement utilisée.",
     videoUrl: 'https://www.youtube.com/watch?v=Lq594XmpPBg',
     seller: SELLERS[0], location: 'Dakar, Almadies', views: 654, likes: 45,
-    createdAt: '2024-01-28', featured: true,
+    createdAt: '2024-01-28', featured: true, sponsored: 'xbox',
   },
   {
     id: '6', title: 'Nintendo Switch OLED — Neuf', slug: 'nintendo-switch-oled-neuf',
