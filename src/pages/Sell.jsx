@@ -72,8 +72,52 @@ export default function Sell() {
     if (etape === 3 && !form.price)     return toast.error('Indique un prix')
     if (etape === 3 && !form.location)  return toast.error('Indique ta ville')
     if (etape === 3 && !form.phone)     return toast.error('Indique ton numéro de téléphone')
-    if (etape === ETAPES.length - 2) { setTermine(true); return }
+    if (etape === ETAPES.length - 1)    { publier(); return }
     setEtape(s => s + 1)
+  }
+
+  async function publier() {
+    setPublishing(true)
+    try {
+      // Upload des images vers Supabase Storage
+      const uploadedUrls = []
+      for (const img of form.images) {
+        try {
+          const ext = img.file.name.split('.').pop()
+          const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+          const { error: upErr } = await supabase.storage.from('product-images').upload(path, img.file)
+          if (!upErr) {
+            const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(path)
+            uploadedUrls.push(urlData.publicUrl)
+          }
+        } catch { /* image ignorée si upload échoue */ }
+      }
+
+      // Génération du slug unique
+      const base = form.title.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+      const slug = `${base}-${Date.now()}`
+
+      const { error } = await supabase.from('products').insert({
+        title:       form.title,
+        slug,
+        description: form.description,
+        price:       parseInt(form.price),
+        category:    form.category,
+        condition:   form.condition,
+        images:      uploadedUrls,
+        seller_id:   user.id,
+        location:    form.location,
+        status:      'active',
+      })
+
+      if (error) throw error
+      setTermine(true)
+    } catch (err) {
+      toast.error(err.message || 'Erreur lors de la publication')
+    } finally {
+      setPublishing(false)
+    }
   }
 
   async function ajouterVideo(e) {
