@@ -48,17 +48,35 @@ export function AuthProvider({ children }) {
     if (session?.user) await fetchProfile(session.user.id)
   }
 
-  async function signUp({ email, password, fullName, phone, location }) {
+  async function signUp({ email, password, fullName, phone, location, avatarFile }) {
     const { data, error } = await supabase.auth.signUp({ email, password })
     if (error) throw error
 
     if (data.user) {
+      let avatarUrl = null
+      if (avatarFile) {
+        try {
+          const ext = avatarFile.name.split('.').pop()
+          const path = `${data.user.id}.${ext}`
+          const { error: uploadError } = await supabase.storage
+            .from('avatars')
+            .upload(path, avatarFile, { upsert: true })
+          if (!uploadError) {
+            const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path)
+            avatarUrl = urlData.publicUrl
+          }
+        } catch {
+          // avatar upload failed silently — profile created without photo
+        }
+      }
+
       const { error: profileError } = await supabase.from('profiles').insert({
         id:         data.user.id,
         full_name:  fullName,
         username:   email.split('@')[0],
         phone,
         location,
+        avatar_url: avatarUrl,
         is_premium: false,
       })
       if (profileError) {
@@ -66,7 +84,6 @@ export function AuthProvider({ children }) {
       }
     }
 
-    // data.session est null si Supabase demande une confirmation email
     const needsConfirmation = !data.session
     return { needsConfirmation }
   }
