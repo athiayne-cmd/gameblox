@@ -1,3 +1,42 @@
+export const SPONSORS = [
+  {
+    id: 'playstation',
+    name: 'PlayStation',
+    slogan: 'Play Has No Limits',
+    color: '#003087',
+    accentColor: '#0070d1',
+    bgColor: 'rgba(0,48,135,0.15)',
+    categories: ['ps5', 'ps4', 'psp'],
+  },
+  {
+    id: 'xbox',
+    name: 'Xbox',
+    slogan: 'Power Your Dreams',
+    color: '#107c10',
+    accentColor: '#52b043',
+    bgColor: 'rgba(16,124,16,0.15)',
+    categories: ['xbox'],
+  },
+  {
+    id: 'nintendo',
+    name: 'Nintendo',
+    slogan: 'Play Together Anywhere',
+    color: '#e53935',
+    accentColor: '#ff5252',
+    bgColor: 'rgba(229,57,53,0.15)',
+    categories: ['nintendo'],
+  },
+  {
+    id: 'razer',
+    name: 'Razer',
+    slogan: 'For Gamers. By Gamers.',
+    color: '#00ff00',
+    accentColor: '#44d62c',
+    bgColor: 'rgba(0,255,0,0.08)',
+    categories: ['casques', 'manettes'],
+  },
+]
+
 export const CATEGORIES = [
   { id: 'ps5',      name: 'PlayStation 5', icon: '🎮', count: 234, gradient: 'from-purple-600 to-violet-800',  border: 'border-purple-500/30',  bg: 'bg-purple-500/10' },
   { id: 'ps4',      name: 'PlayStation 4', icon: '📀', count: 312, gradient: 'from-blue-600 to-blue-800',      border: 'border-blue-500/30',    bg: 'bg-blue-500/10' },
