@@ -40,6 +40,8 @@ export default function App() {
         <Route path="/profil"          element={<MyProfile />} />
         <Route path="/profil/:id"      element={<Profile />} />
         <Route path="/partenaires"     element={<Partners />} />
+        <Route path="/favoris"         element={<Favorites />} />
+        <Route path="/notifications"   element={<Notifications />} />
         <Route path="*"                element={<NotFound />} />
       </Route>
       <Route path="/connexion"   element={<Login />} />
