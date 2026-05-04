@@ -509,9 +509,9 @@ export default function Sell() {
             disabled={etape === 0} icon={<ArrowLeft size={16}/>}>
             Précédent
           </Button>
-          <Button onClick={suivant}
+          <Button onClick={suivant} disabled={publishing}
             iconRight={etape === ETAPES.length - 1 ? <CheckCircle size={16}/> : <ArrowRight size={16}/>}>
-            {etape === ETAPES.length - 1 ? "Publier l'annonce" : 'Continuer'}
+            {publishing ? 'Publication...' : etape === ETAPES.length - 1 ? "Publier l'annonce" : 'Continuer'}
           </Button>
         </div>
       </div>
