@@ -39,8 +39,9 @@ export default function Sell() {
     category: '', title: '', description: '', condition: '',
     images: [], videoFile: null, videoUrl: '', price: '', location: '', phone: ''
   })
-  const [videoMode, setVideoMode]     = useState('url')
+  const [videoMode, setVideoMode]       = useState('url')
   const [videoPreview, setVideoPreview] = useState(null)
+  const [publishing, setPublishing]     = useState(false)
 
   useEffect(() => {
     if (!user) { navigate('/connexion'); return }
