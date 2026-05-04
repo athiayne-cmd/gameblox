@@ -1,16 +1,76 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
 import { Heart, MapPin, Star } from 'lucide-react'
 import { formatPrice } from '../../utils/formatters'
 import { CAT_STYLE, SPONSORS } from '../../utils/mockData'
+import { useAuth } from '../../contexts/AuthContext'
+import { supabase } from '../../lib/supabase'
+import toast from 'react-hot-toast'
+
+const isUUID = id => typeof id === 'string' && id.includes('-') && id.length === 36
 
 export default function ProductCard({ product, index = 0 }) {
+  const { user } = useAuth()
+  const navigate = useNavigate()
   const sponsor = product.sponsored ? SPONSORS.find(s => s.id === product.sponsored) : null
   const [liked, setLiked] = useState(false)
   const [imgErr, setImgErr] = useState(false)
   const cat = CAT_STYLE[product.category] || { emoji: '🎮', gradient: 'from-gaming-surface to-gaming-card' }
-
   const displayImg = !imgErr && product.images?.[0] ? product.images[0] : null
+  const realProduct = isUUID(product.id)
+
+  useEffect(() => {
+    if (!user || !realProduct) return
+    supabase
+      .from('wishlist')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('product_id', product.id)
+      .maybeSingle()
+      .then(({ data }) => setLiked(!!data))
+  }, [user, product.id])
+
+  async function toggleLike(e) {
+    e.preventDefault()
+    e.stopPropagation()
+
+    if (!user) {
+      navigate('/connexion')
+      return
+    }
+
+    if (!realProduct) {
+      setLiked(l => !l)
+      return
+    }
+
+    if (liked) {
+      await supabase
+        .from('wishlist')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('product_id', product.id)
+      setLiked(false)
+    } else {
+      const { error } = await supabase
+        .from('wishlist')
+        .insert({ user_id: user.id, product_id: product.id })
+
+      if (!error) {
+        setLiked(true)
+        toast.success('Ajouté aux favoris !')
+        if (product.seller_id && product.seller_id !== user.id) {
+          await supabase.from('notifications').insert({
+            user_id:    product.seller_id,
+            type:       'like',
+            title:      "Quelqu'un a aimé ton annonce",
+            body:       product.title,
+            product_id: product.id,
+          })
+        }
+      }
+    }
+  }
 
   return (
     <div
@@ -40,12 +100,10 @@ export default function ProductCard({ product, index = 0 }) {
             <span className="select-none">{cat.emoji}</span>
           )}
 
-          {/* Overlay gradient on image */}
           {displayImg && (
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
           )}
 
-          {/* Sponsor badge */}
           {sponsor && (
             <div
               className="absolute top-2 left-2 flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold"
@@ -55,7 +113,6 @@ export default function ProductCard({ product, index = 0 }) {
             </div>
           )}
 
-          {/* Premium badge */}
           {product.featured && !sponsor && (
             <div
               className="absolute top-2 left-2 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold"
@@ -65,7 +122,6 @@ export default function ProductCard({ product, index = 0 }) {
             </div>
           )}
 
-          {/* Condition badge */}
           <div
             className="absolute top-2 right-2 rounded-full px-2 py-0.5 text-[10px] font-bold text-white"
             style={{ background: 'rgba(139,0,255,0.8)' }}
@@ -109,9 +165,13 @@ export default function ProductCard({ product, index = 0 }) {
           </div>
 
           <button
-            onClick={e => { e.preventDefault(); e.stopPropagation(); setLiked(l => !l) }}
+            onClick={toggleLike}
             className="flex items-center gap-1 transition-colors"
-            style={{ fontSize: 11, color: liked ? '#ff3355' : '#6b6b8a', background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}
+            style={{
+              fontSize: 11,
+              color: liked ? '#ff3355' : '#6b6b8a',
+              background: 'none', border: 'none', cursor: 'pointer', padding: 0,
+            }}
           >
             <Heart size={13} style={{ fill: liked ? '#ff3355' : 'none', stroke: liked ? '#ff3355' : '#6b6b8a' }} />
             {(product.likes || 0) + (liked ? 1 : 0)}
