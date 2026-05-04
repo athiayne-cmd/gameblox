@@ -34,6 +34,8 @@ export default function Home() {
       .catch(() => setLoadingReal(false))
   }, [])
 
+  useEffect(() => { fetchProducts() }, [location.key, fetchProducts])
+
   const combined = realProducts.length >= MOCK_THRESHOLD
     ? realProducts
     : [...realProducts, ...PRODUCTS.filter(m => !realProducts.some(r => r.slug === m.slug))]
