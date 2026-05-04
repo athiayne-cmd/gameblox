@@ -11,11 +11,13 @@ const MOCK_THRESHOLD = 10
 
 export default function Home() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [activeCategory, setActiveCategory] = useState('')
   const [realProducts, setRealProducts] = useState([])
   const [loadingReal, setLoadingReal] = useState(true)
 
-  useEffect(() => {
+  const fetchProducts = useCallback(() => {
+    setLoadingReal(true)
     supabase
       .from('products')
       .select('*, profiles(full_name, username, location)')
