@@ -45,8 +45,18 @@ export default function ProductCard({ product, index = 0 }) {
             <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
           )}
 
+          {/* Sponsor badge */}
+          {sponsor && (
+            <div
+              className="absolute top-2 left-2 flex items-center gap-1 rounded-full px-2 py-0.5 text-[9px] font-bold"
+              style={{ background: 'linear-gradient(90deg, rgba(255,215,0,0.9), rgba(255,140,0,0.9))', color: '#000' }}
+            >
+              <Star size={8} style={{ fill: '#000' }} /> SPONSORISÉ
+            </div>
+          )}
+
           {/* Premium badge */}
-          {product.featured && (
+          {product.featured && !sponsor && (
             <div
               className="absolute top-2 left-2 flex items-center gap-1 rounded-full px-2 py-0.5 text-[10px] font-bold"
               style={{ background: 'linear-gradient(90deg, #ffd700, #ff8c00)', color: '#000' }}
