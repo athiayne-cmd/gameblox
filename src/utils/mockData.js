@@ -104,7 +104,7 @@ export const PRODUCTS = [
     description: "PS5 Edition Disque en parfait état, achetée il y a 8 mois. Vendue avec 2 manettes DualSense, câbles d'origine et toute la documentation. Aucune rayure. Fonctionne parfaitement.",
     videoUrl: 'https://www.youtube.com/watch?v=RkC0l4iekYo',
     seller: SELLERS[0], location: 'Dakar, Plateau', views: 1247, likes: 89,
-    createdAt: '2024-02-10', featured: true,
+    createdAt: '2024-02-10', featured: true, sponsored: 'playstation',
   },
   {
     id: '2', title: 'DualSense Midnight Black — Neuf', slug: 'dualsense-midnight-black-neuf',
