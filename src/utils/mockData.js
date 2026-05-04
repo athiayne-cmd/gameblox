@@ -298,7 +298,10 @@ export const PRODUCTS = [
   {
     id: '19', title: 'Pokémon Écarlate — Nintendo Switch', slug: 'pokemon-ecarlate-switch',
     price: 18000, originalPrice: 28000, category: 'jeux', categoryName: 'Jeux CD',
-    condition: 'excellent', images: [],
+    condition: 'excellent', images: [
+      'https://images.unsplash.com/photo-1550921452-15a3a7df6b7f?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1585345235009-ccf2584beaff?w=800&h=600&fit=crop&q=80',
+    ],
     description: "Pokémon Écarlate pour Switch, parfait état. Boîte et cartouche en excellent état. Aucune rayure.",
     seller: SELLERS[4], location: 'Kaolack', views: 267, likes: 31,
     createdAt: '2024-02-06', featured: false,
