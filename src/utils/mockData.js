@@ -287,7 +287,10 @@ export const PRODUCTS = [
   {
     id: '18', title: 'GTA V — PS4', slug: 'gta-v-ps4',
     price: 8000, originalPrice: 12000, category: 'jeux', categoryName: 'Jeux CD',
-    condition: 'good', images: [],
+    condition: 'good', images: [
+      'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1560419015-7c427e8ae5ba?w=800&h=600&fit=crop&q=80',
+    ],
     description: 'GTA V pour PS4. Bon état, fonctionne parfaitement. Quelques micro-rayures sans impact sur le jeu.',
     seller: SELLERS[1], location: 'Thiès', views: 198, likes: 8,
     createdAt: '2024-02-03', featured: false,
