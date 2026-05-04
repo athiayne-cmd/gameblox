@@ -1,18 +1,44 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Search, ChevronRight } from 'lucide-react'
 import ProductCard from '../components/ui/ProductCard'
 import Stories from '../components/ui/Stories'
 import SponsorBanner from '../components/ui/SponsorBanner'
 import { PRODUCTS, CATEGORIES } from '../utils/mockData'
+import { supabase } from '../lib/supabase'
+
+const MOCK_THRESHOLD = 10
 
 export default function Home() {
   const navigate = useNavigate()
   const [activeCategory, setActiveCategory] = useState('')
+  const [realProducts, setRealProducts] = useState([])
+  const [loadingReal, setLoadingReal] = useState(true)
+
+  useEffect(() => {
+    supabase
+      .from('products')
+      .select('*, profiles(full_name, username, location)')
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(40)
+      .then(({ data }) => {
+        setRealProducts((data || []).map(p => ({
+          ...p,
+          seller: { name: p.profiles?.full_name || p.profiles?.username || 'Vendeur', id: p.seller_id },
+        })))
+        setLoadingReal(false)
+      })
+      .catch(() => setLoadingReal(false))
+  }, [])
+
+  const combined = realProducts.length >= MOCK_THRESHOLD
+    ? realProducts
+    : [...realProducts, ...PRODUCTS.filter(m => !realProducts.some(r => r.slug === m.slug))]
 
   const filtered = activeCategory
-    ? PRODUCTS.filter(p => p.category === activeCategory)
-    : PRODUCTS
+    ? combined.filter(p => p.category === activeCategory)
+    : combined
 
   return (
     <div className="min-h-full" style={{ background: '#0a0010' }}>
