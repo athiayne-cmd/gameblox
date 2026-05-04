@@ -131,7 +131,10 @@ export const PRODUCTS = [
   {
     id: '4', title: 'PS4 Pro 1TB — Très bon état', slug: 'ps4-pro-1tb-tres-bon-etat',
     price: 160000, originalPrice: 200000, category: 'ps4', categoryName: 'PlayStation 4',
-    condition: 'excellent', images: [],
+    condition: 'excellent', images: [
+      'https://images.unsplash.com/photo-1486401899868-0e435ed85128?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1499063078284-f78f7d89616a?w=800&h=600&fit=crop&q=80',
+    ],
     description: "PS4 Pro 1TB, console seule. Très bon état général, propre. Inclut le câble HDMI et le câble d'alimentation. Aucun problème technique.",
     seller: SELLERS[3], location: 'Mbour', views: 876, likes: 56,
     createdAt: '2024-02-05', featured: true,
