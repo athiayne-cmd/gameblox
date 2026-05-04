@@ -18,6 +18,8 @@ import PaymentSuccess from './pages/PaymentSuccess'
 import Subscription from './pages/Subscription'
 import PremiumSuccess from './pages/PremiumSuccess'
 import PremiumCancel from './pages/PremiumCancel'
+import Favorites from './pages/Favorites'
+import Notifications from './pages/Notifications'
 
 export default function App() {
   return (
