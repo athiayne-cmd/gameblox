@@ -64,7 +64,11 @@ export function AuthProvider({ children }) {
   }
 
   async function signUp({ email, password, fullName, phone, location, avatarFile }) {
-    const { data, error } = await supabase.auth.signUp({ email, password })
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { full_name: fullName, username: email.split('@')[0], phone: phone || '', location: location || '' } },
+    })
     if (error) throw error
 
     if (data.user) {
