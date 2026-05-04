@@ -309,7 +309,10 @@ export const PRODUCTS = [
   {
     id: '20', title: 'Call of Duty MW3 — Xbox Series', slug: 'call-of-duty-mw3-xbox',
     price: 18000, originalPrice: 25000, category: 'jeux', categoryName: 'Jeux CD',
-    condition: 'good', images: [],
+    condition: 'good', images: [
+      'https://images.unsplash.com/photo-1542751371-adc38448a05e?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1538481199705-c710c4e965fc?w=800&h=600&fit=crop&q=80',
+    ],
     description: 'Call of Duty Modern Warfare 3 pour Xbox Series. Bon état général. Jeu multijoueur incontournable.',
     seller: SELLERS[5], location: 'Ziguinchor', views: 134, likes: 9,
     createdAt: '2024-02-13', featured: false,
