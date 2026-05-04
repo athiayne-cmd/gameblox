@@ -20,29 +20,43 @@ export default function ProductCard({ product, index = 0 }) {
   const realProduct = isUUID(product.id)
 
   useEffect(() => {
-    if (!user || !realProduct) return
-    supabase
-      .from('wishlist')
-      .select('id')
-      .eq('user_id', user.id)
-      .eq('product_id', product.id)
-      .maybeSingle()
-      .then(({ data }) => setLiked(!!data))
+    if (realProduct && user) {
+      supabase
+        .from('wishlist')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('product_id', product.id)
+        .maybeSingle()
+        .then(({ data }) => setLiked(!!data))
+    } else if (!realProduct) {
+      const stored = JSON.parse(localStorage.getItem('gameblox_likes') || '[]')
+      setLiked(stored.includes(String(product.id)))
+    }
   }, [user, product.id])
 
   async function toggleLike(e) {
     e.preventDefault()
     e.stopPropagation()
 
-    if (!user) {
+    if (!user && realProduct) {
       navigate('/connexion')
       return
     }
 
     if (!realProduct) {
-      setLiked(l => !l)
+      const stored = JSON.parse(localStorage.getItem('gameblox_likes') || '[]')
+      if (liked) {
+        localStorage.setItem('gameblox_likes', JSON.stringify(stored.filter(id => id !== String(product.id))))
+        setLiked(false)
+      } else {
+        localStorage.setItem('gameblox_likes', JSON.stringify([...stored, String(product.id)]))
+        setLiked(true)
+        toast.success('Ajouté aux favoris !')
+      }
       return
     }
+
+    if (!user) { navigate('/connexion'); return }
 
     if (liked) {
       await supabase
