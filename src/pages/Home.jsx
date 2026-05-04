@@ -157,23 +157,22 @@ export default function Home() {
       </div>
 
       {/* ── Product Grid 2 columns ── */}
-      <div style={{
-        display: 'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap: 10,
-        padding: '0 12px 20px',
-      }}>
-        {filtered.slice(0, 12).map(p => (
-          <ProductCard key={p.id} product={p} />
-        ))}
-      </div>
-
-      {filtered.length === 0 && (
+      {loadingReal ? (
+        <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+          <div style={{ width: 28, height: 28, borderRadius: '50%', border: '2px solid #8b00ff', borderTopColor: 'transparent', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+        </div>
+      ) : filtered.length === 0 ? (
         <div style={{ padding: '40px 20px', textAlign: 'center' }}>
           <p style={{ fontSize: 40 }}>🎮</p>
           <p style={{ color: '#6b6b8a', marginTop: 8, fontFamily: 'Inter, sans-serif' }}>
             Aucune annonce dans cette catégorie
           </p>
+        </div>
+      ) : (
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, padding: '0 12px 20px' }}>
+          {filtered.slice(0, 12).map(p => (
+            <ProductCard key={p.id} product={p} />
+          ))}
         </div>
       )}
     </div>
