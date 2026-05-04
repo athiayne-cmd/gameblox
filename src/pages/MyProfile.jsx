@@ -39,9 +39,17 @@ export default function MyProfile() {
   const navigate = useNavigate()
   const [myListings, setMyListings] = useState([])
   const [loadingListings, setLoadingListings] = useState(false)
+  const [favCount, setFavCount] = useState(0)
+  const [notifCount, setNotifCount] = useState(0)
 
   useEffect(() => {
-    if (user) fetchMyListings()
+    if (user) {
+      fetchMyListings()
+      supabase.from('wishlist').select('id', { count: 'exact', head: true }).eq('user_id', user.id)
+        .then(({ count }) => setFavCount(count || 0))
+      supabase.from('notifications').select('id', { count: 'exact', head: true }).eq('user_id', user.id).eq('read', false)
+        .then(({ count }) => setNotifCount(count || 0))
+    }
   }, [user])
 
   async function fetchMyListings() {
