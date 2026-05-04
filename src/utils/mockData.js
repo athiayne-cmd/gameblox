@@ -222,7 +222,7 @@ export const PRODUCTS = [
     id: '12', title: 'Nintendo Switch Lite Jaune', slug: 'nintendo-switch-lite-jaune',
     price: 120000, originalPrice: 145000, category: 'nintendo', categoryName: 'Nintendo',
     condition: 'excellent', images: [
-      'https://images.unsplash.com/photo-1550921452-15a3a7df6b7f?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1578303512597-81e6cc155b3e?w=800&h=600&fit=crop&q=80',
       'https://images.unsplash.com/photo-1612287230202-1ff1d85d1bdf?w=800&h=600&fit=crop&q=80',
     ],
     description: "Switch Lite jaune très bon état. Légères marques sur la boîte, console impeccable. Idéale pour jouer en déplacement.",
