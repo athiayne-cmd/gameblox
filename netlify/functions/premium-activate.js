@@ -55,9 +55,11 @@ exports.handler = async (event) => {
     process.env.SUPABASE_SERVICE_ROLE_KEY
   )
 
+  const premiumUntil = new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString()
+
   const { error } = await supabase
     .from('profiles')
-    .update({ is_premium: true })
+    .update({ is_premium: true, premium_until: premiumUntil })
     .eq('id', userId)
 
   if (error) {
