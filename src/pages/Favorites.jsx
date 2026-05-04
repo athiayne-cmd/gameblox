@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom'
 import { ArrowLeft, Heart } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
+import { PRODUCTS } from '../utils/mockData'
 import ProductCard from '../components/ui/ProductCard'
 
 export default function Favorites() {
@@ -12,19 +13,28 @@ export default function Favorites() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (!user) { navigate('/connexion'); return }
     fetchFavorites()
   }, [user])
 
   async function fetchFavorites() {
     setLoading(true)
     try {
-      const { data } = await supabase
-        .from('wishlist')
-        .select('product_id, products(*)')
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-      setFavorites((data || []).map(w => w.products).filter(Boolean))
+      // Produits mock depuis localStorage
+      const storedIds = JSON.parse(localStorage.getItem('gameblox_likes') || '[]')
+      const mockFavs = PRODUCTS.filter(p => storedIds.includes(String(p.id)))
+
+      // Produits réels depuis Supabase
+      let supabaseFavs = []
+      if (user) {
+        const { data } = await supabase
+          .from('wishlist')
+          .select('product_id, products(*)')
+          .eq('user_id', user.id)
+          .order('created_at', { ascending: false })
+        supabaseFavs = (data || []).map(w => w.products).filter(Boolean)
+      }
+
+      setFavorites([...supabaseFavs, ...mockFavs])
     } catch {
       // silent
     } finally {
