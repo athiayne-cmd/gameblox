@@ -1,5 +1,5 @@
 import { useNavigate, Link } from 'react-router-dom'
-import { Plus, Heart, Package, Bell, LogOut, Zap } from 'lucide-react'
+import { Plus, Heart, Package, Bell, LogOut, Zap, Star } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { PRODUCTS } from '../utils/mockData'
 
