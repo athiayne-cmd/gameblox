@@ -155,7 +155,7 @@ export const PRODUCTS = [
     condition: 'new', images: [],
     description: "Nintendo Switch OLED Blanc, neuve dans sa boîte. Jamais utilisée. Garantie 1 an. Achetée au Sénégal.",
     seller: SELLERS[4], location: 'Kaolack', views: 432, likes: 67,
-    createdAt: '2024-02-20', featured: true,
+    createdAt: '2024-02-20', featured: true, sponsored: 'nintendo',
   },
   {
     id: '7', title: 'FIFA 24 — PS4', slug: 'fifa-24-ps4',
