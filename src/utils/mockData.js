@@ -210,7 +210,10 @@ export const PRODUCTS = [
   {
     id: '11', title: 'PSP 3000 + 10 Jeux UMD', slug: 'psp-3000-10-jeux-umd',
     price: 35000, originalPrice: null, category: 'psp', categoryName: 'PSP / PS Vita',
-    condition: 'good', images: [],
+    condition: 'good', images: [
+      'https://images.unsplash.com/photo-1493711662062-fa541adb3fc8?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1606318313647-17378d7e78b9?w=800&h=600&fit=crop&q=80',
+    ],
     description: "PSP 3000 noire en bon état, avec 10 jeux UMD (FIFA, GTA, PES, Naruto, Tekken...) et chargeur d'origine.",
     seller: SELLERS[0], location: 'Dakar, Médina', views: 289, likes: 41,
     createdAt: '2024-02-01', featured: false,
