@@ -254,7 +254,10 @@ export const PRODUCTS = [
   {
     id: '15', title: 'Casque SteelSeries Arctis 7P', slug: 'casque-steelseries-arctis-7p',
     price: 48000, originalPrice: 65000, category: 'casques', categoryName: 'Casques',
-    condition: 'good', images: [],
+    condition: 'good', images: [
+      'https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800&h=600&fit=crop&q=80',
+    ],
     description: 'Casque SteelSeries Arctis 7P sans-fil pour PS5/PS4. Son excellent, micro rétractable. Autonomie 24h.',
     seller: SELLERS[2], location: 'Saint-Louis', views: 156, likes: 14,
     createdAt: '2024-02-11', featured: false,
