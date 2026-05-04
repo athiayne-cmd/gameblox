@@ -145,7 +145,11 @@ export default function Marketplace() {
       )}
 
       {/* Results */}
-      {showGrid && !noResults && (
+      {loadingReal && showGrid ? (
+        <div style={{ textAlign: 'center', padding: '40px 20px' }}>
+          <div style={{ width: 28, height: 28, borderRadius: '50%', border: '2px solid #8b00ff', borderTopColor: 'transparent', animation: 'spin 0.8s linear infinite', margin: '0 auto' }} />
+        </div>
+      ) : showGrid && !noResults && (
         <>
           {!activeCategory && (
             <div style={{ padding: '8px 14px 6px' }}>
