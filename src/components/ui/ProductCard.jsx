@@ -14,9 +14,14 @@ export default function ProductCard({ product, index = 0 }) {
 
   return (
     <div
-      className="rounded-2xl overflow-hidden cursor-pointer relative border border-gaming-border/60
-                 transition-all duration-200 hover:-translate-y-1 hover:border-gaming-purple/50"
-      style={{ background: '#1a0038', boxShadow: '0 2px 16px rgba(0,0,0,0.5)' }}
+      className="rounded-2xl overflow-hidden cursor-pointer relative transition-all duration-200 hover:-translate-y-1"
+      style={{
+        background: '#1a0038',
+        border: sponsor ? `1px solid ${sponsor.color}66` : '1px solid rgba(139,0,255,0.25)',
+        boxShadow: sponsor
+          ? `0 2px 16px rgba(0,0,0,0.5), 0 0 14px ${sponsor.color}20`
+          : '0 2px 16px rgba(0,0,0,0.5)',
+      }}
     >
       {/* Image */}
       <Link to={`/produit/${product.slug}`} className="block relative" style={{ height: 140 }}>
