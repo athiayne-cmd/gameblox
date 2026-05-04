@@ -65,6 +65,9 @@ export default function Home() {
         </div>
       </div>
 
+      {/* ── Sponsor Banner ── */}
+      <SponsorBanner />
+
       {/* ── Stories ── */}
       <Stories />
 
