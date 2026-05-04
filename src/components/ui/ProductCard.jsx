@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Heart, MapPin } from 'lucide-react'
+import { Heart, MapPin, Star } from 'lucide-react'
 import { formatPrice } from '../../utils/formatters'
-import { CAT_STYLE } from '../../utils/mockData'
+import { CAT_STYLE, SPONSORS } from '../../utils/mockData'
 
 export default function ProductCard({ product, index = 0 }) {
+  const sponsor = product.sponsored ? SPONSORS.find(s => s.id === product.sponsored) : null
   const [liked, setLiked] = useState(false)
   const [imgErr, setImgErr] = useState(false)
   const cat = CAT_STYLE[product.category] || { emoji: '🎮', gradient: 'from-gaming-surface to-gaming-card' }
