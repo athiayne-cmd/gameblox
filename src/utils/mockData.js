@@ -276,7 +276,10 @@ export const PRODUCTS = [
   {
     id: '17', title: 'Xbox Series S 512 Go — Neuf', slug: 'xbox-series-s-neuf',
     price: 200000, originalPrice: 240000, category: 'xbox', categoryName: 'Xbox Series',
-    condition: 'new', images: [],
+    condition: 'new', images: [
+      'https://images.unsplash.com/photo-1605901309584-818e25960a8f?w=800&h=600&fit=crop&q=80',
+      'https://images.unsplash.com/photo-1621259182978-fbf93132d53d?w=800&h=600&fit=crop&q=80',
+    ],
     description: "Xbox Series S 512 Go blanche neuve dans sa boîte. Jamais ouverte. Parfaite pour le gaming numérique.",
     seller: SELLERS[3], location: 'Mbour', views: 445, likes: 36,
     createdAt: '2024-02-16', featured: false,
