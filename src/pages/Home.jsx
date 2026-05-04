@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Search, ChevronRight } from 'lucide-react'
 import ProductCard from '../components/ui/ProductCard'
 import Stories from '../components/ui/Stories'
+import SponsorBanner from '../components/ui/SponsorBanner'
 import { PRODUCTS, CATEGORIES } from '../utils/mockData'
 
 export default function Home() {
