@@ -98,6 +98,20 @@ export default function Sell() {
         .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
       const slug = `${base}-${Date.now()}`
 
+      // Upload vidéo si fichier sélectionné
+      let finalVideoUrl = form.videoUrl || null
+      if (form.videoFile) {
+        try {
+          const ext  = form.videoFile.name.split('.').pop()
+          const path = `${user.id}/${Date.now()}.${ext}`
+          const { error: vidErr } = await supabase.storage.from('videos').upload(path, form.videoFile)
+          if (!vidErr) {
+            const { data: vUrl } = supabase.storage.from('videos').getPublicUrl(path)
+            finalVideoUrl = vUrl.publicUrl
+          }
+        } catch { /* vidéo ignorée si upload échoue */ }
+      }
+
       const { error } = await supabase.from('products').insert({
         title:       form.title,
         slug,
@@ -106,6 +120,7 @@ export default function Sell() {
         category:    form.category,
         condition:   form.condition,
         images:      uploadedUrls,
+        video_url:   finalVideoUrl,
         seller_id:   user.id,
         location:    form.location,
         status:      'active',
