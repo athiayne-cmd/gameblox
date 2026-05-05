@@ -20,12 +20,13 @@ export default function ProductDetail() {
   const [imgErrors, setImgErrors] = useState({})
   const [similar, setSimilar]     = useState([])
 
+  const touchStartX = useRef(null)
+
   useEffect(() => {
     if (mockProduct) {
       setSimilar(PRODUCTS.filter(p => p.category === mockProduct.category && p.id !== mockProduct.id).slice(0, 4))
       return
     }
-    // Fetch depuis Supabase
     supabase
       .from('products')
       .select('*, profiles(full_name, username, location, avatar_url, is_premium)')
@@ -47,7 +48,6 @@ export default function ProductDetail() {
         }
         setProduct(p)
         setLoading(false)
-        // Produits similaires
         supabase
           .from('products')
           .select('*, profiles(full_name, username, location)')
@@ -98,6 +98,22 @@ export default function ProductDetail() {
   const displayImages = validImages.length > 0 ? validImages : null
   const safeIdx = Math.min(activeImg, Math.max(0, (displayImages?.length || 1) - 1))
 
+  function prevImg() {
+    setActiveImg(i => (i === 0 ? (displayImages.length - 1) : i - 1))
+  }
+  function nextImg() {
+    setActiveImg(i => (i === displayImages.length - 1 ? 0 : i + 1))
+  }
+  function onTouchStart(e) {
+    touchStartX.current = e.touches[0].clientX
+  }
+  function onTouchEnd(e) {
+    if (touchStartX.current === null || !displayImages || displayImages.length <= 1) return
+    const dx = e.changedTouches[0].clientX - touchStartX.current
+    if (Math.abs(dx) > 40) dx < 0 ? nextImg() : prevImg()
+    touchStartX.current = null
+  }
+
   return (
     <div style={{ minHeight: '100%', background: '#0a0010', paddingBottom: 90 }}>
 
@@ -122,21 +138,58 @@ export default function ProductDetail() {
         </button>
       </div>
 
-      {/* ── Image ── */}
-      <div style={{ height: 220, position: 'relative', background: 'linear-gradient(135deg, #120020 0%, #1a0038 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+      {/* ── Image carousel ── */}
+      <div
+        style={{ height: 260, position: 'relative', background: 'linear-gradient(135deg, #120020 0%, #1a0038 100%)', display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', touchAction: 'pan-y' }}
+        onTouchStart={onTouchStart}
+        onTouchEnd={onTouchEnd}
+      >
         {displayImages ? (
-          <img src={displayImages[safeIdx]} alt={product.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            onError={() => setImgErrors(prev => ({ ...prev, [displayImages[safeIdx]]: true }))} />
+          <img
+            src={displayImages[safeIdx]}
+            alt={product.title}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', userSelect: 'none', pointerEvents: 'none' }}
+            onError={() => setImgErrors(prev => ({ ...prev, [displayImages[safeIdx]]: true }))}
+          />
         ) : (
           <span style={{ fontSize: 80, userSelect: 'none' }}>{cat.emoji}</span>
         )}
+
+        {/* Arrows — only when multiple images */}
+        {displayImages && displayImages.length > 1 && (
+          <>
+            <button
+              onClick={prevImg}
+              style={{ position: 'absolute', left: 10, top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.45)', border: 'none', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff', zIndex: 5 }}
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              onClick={nextImg}
+              style={{ position: 'absolute', right: 10, top: '50%', transform: 'translateY(-50%)', background: 'rgba(0,0,0,0.45)', border: 'none', borderRadius: '50%', width: 34, height: 34, display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#fff', zIndex: 5 }}
+            >
+              <ChevronRight size={20} />
+            </button>
+            {/* Dot indicators */}
+            <div style={{ position: 'absolute', bottom: 10, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 6, zIndex: 5 }}>
+              {displayImages.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActiveImg(i)}
+                  style={{ width: safeIdx === i ? 18 : 6, height: 6, borderRadius: 3, background: safeIdx === i ? '#8b00ff' : 'rgba(255,255,255,0.4)', border: 'none', padding: 0, cursor: 'pointer', transition: 'width 0.2s' }}
+                />
+              ))}
+            </div>
+          </>
+        )}
+
         {discount && (
-          <div style={{ position: 'absolute', top: 12, left: 12, background: '#ff3355', color: '#fff', borderRadius: 20, padding: '3px 10px', fontSize: 12, fontWeight: 700, fontFamily: 'Space Mono, monospace' }}>
+          <div style={{ position: 'absolute', top: 12, left: 12, background: '#ff3355', color: '#fff', borderRadius: 20, padding: '3px 10px', fontSize: 12, fontWeight: 700, fontFamily: 'Space Mono, monospace', zIndex: 5 }}>
             -{discount}%
           </div>
         )}
         {product.featured && (
-          <div style={{ position: 'absolute', top: 12, left: discount ? 80 : 12, background: 'linear-gradient(90deg, #ffd700, #ff8c00)', color: '#000', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700 }}>
+          <div style={{ position: 'absolute', top: 12, left: discount ? 80 : 12, background: 'linear-gradient(90deg, #ffd700, #ff8c00)', color: '#000', borderRadius: 20, padding: '3px 10px', fontSize: 11, fontWeight: 700, zIndex: 5 }}>
             👑 VENDEUR PREMIUM
           </div>
         )}
@@ -150,6 +203,14 @@ export default function ProductDetail() {
               <img src={img} alt={`Photo ${i + 1}`} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             </button>
           ))}
+        </div>
+      )}
+
+      {/* ── Video ── */}
+      {product.videoUrl && (
+        <div style={{ padding: '0 14px 4px' }}>
+          <p style={{ margin: '0 0 8px', fontWeight: 700, fontSize: 13, fontFamily: 'Rajdhani, sans-serif', color: '#fff' }}>Vidéo</p>
+          <VideoPlayer url={product.videoUrl} />
         </div>
       )}
 
