@@ -26,12 +26,25 @@ export default function Favorites() {
       // Produits réels depuis Supabase
       let supabaseFavs = []
       if (user) {
-        const { data } = await supabase
+        const { data: wl } = await supabase
           .from('wishlist')
-          .select('product_id, products(*)')
+          .select('product_id')
           .eq('user_id', user.id)
           .order('created_at', { ascending: false })
-        supabaseFavs = (data || []).map(w => w.products).filter(Boolean)
+
+        const ids = (wl || []).map(w => w.product_id).filter(Boolean)
+
+        if (ids.length > 0) {
+          const { data: prods } = await supabase
+            .from('products')
+            .select('*, profiles(full_name, username, location)')
+            .in('id', ids)
+
+          supabaseFavs = (prods || []).map(p => ({
+            ...p,
+            seller: { name: p.profiles?.full_name || p.profiles?.username || 'Vendeur', id: p.seller_id },
+          }))
+        }
       }
 
       setFavorites([...supabaseFavs, ...mockFavs])
