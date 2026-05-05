@@ -1,9 +1,10 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import { ArrowLeft, Heart, MapPin, MessageCircle } from 'lucide-react'
+import { ArrowLeft, Heart, MapPin, MessageCircle, ChevronLeft, ChevronRight } from 'lucide-react'
 import { PRODUCTS, CAT_STYLE } from '../utils/mockData'
 import { formatPrice, CONDITIONS } from '../utils/formatters'
 import ProductCard from '../components/ui/ProductCard'
+import VideoPlayer from '../components/ui/VideoPlayer'
 import { supabase } from '../lib/supabase'
 
 export default function ProductDetail() {
