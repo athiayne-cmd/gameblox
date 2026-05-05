@@ -207,10 +207,10 @@ export default function ProductDetail() {
       )}
 
       {/* ── Video ── */}
-      {product.videoUrl && (
+      {(product.videoUrl || product.video_url) && (
         <div style={{ padding: '0 14px 4px' }}>
           <p style={{ margin: '0 0 8px', fontWeight: 700, fontSize: 13, fontFamily: 'Rajdhani, sans-serif', color: '#fff' }}>Vidéo</p>
-          <VideoPlayer url={product.videoUrl} />
+          <VideoPlayer url={product.videoUrl || product.video_url} />
         </div>
       )}
 
