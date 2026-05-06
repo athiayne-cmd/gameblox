@@ -209,8 +209,11 @@ export default function MyProfile() {
         <p style={{ margin: '0 0 10px', color: 'rgba(255,255,255,0.55)', fontSize: 12, fontFamily: 'Inter, sans-serif', position: 'relative', zIndex: 1 }}>
           @{username} · {location}
         </p>
-        <div style={{ position: 'relative', zIndex: 1 }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 10, position: 'relative', zIndex: 1 }}>
           <SubscriptionBadge isPremium={isPremium} />
+          <button onClick={openEdit} style={{ display: 'inline-flex', alignItems: 'center', gap: 5, background: 'rgba(139,0,255,0.15)', border: '1px solid rgba(139,0,255,0.3)', borderRadius: 20, padding: '3px 10px', cursor: 'pointer', color: '#aa33ff', fontSize: 11, fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif' }}>
+            <Edit2 size={10} /> Modifier
+          </button>
         </div>
       </div>
 
