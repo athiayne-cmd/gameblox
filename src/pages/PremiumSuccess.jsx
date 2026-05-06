@@ -26,7 +26,7 @@ export default function PremiumSuccess() {
 
   async function activate(token, userId) {
     try {
-      const res  = await fetch('/.netlify/functions/premium-activate', {
+      const res  = await fetch('/api/premium-activate', {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         body:    JSON.stringify({ token, userId }),
