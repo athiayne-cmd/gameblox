@@ -35,7 +35,7 @@ function formatTime(dateStr) {
 }
 
 export default function Messages() {
-  const { user } = useAuth()
+  const { user, profile } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
   const [conversations, setConversations] = useState([])
