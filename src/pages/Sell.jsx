@@ -101,15 +101,16 @@ export default function Sell() {
       // Upload vidéo si fichier sélectionné
       let finalVideoUrl = form.videoUrl || null
       if (form.videoFile) {
-        try {
-          const ext  = form.videoFile.name.split('.').pop()
-          const path = `${user.id}/${Date.now()}.${ext}`
-          const { error: vidErr } = await supabase.storage.from('videos').upload(path, form.videoFile)
-          if (!vidErr) {
-            const { data: vUrl } = supabase.storage.from('videos').getPublicUrl(path)
-            finalVideoUrl = vUrl.publicUrl
-          }
-        } catch { /* vidéo ignorée si upload échoue */ }
+        const ext  = form.videoFile.name.split('.').pop()
+        const path = `${user.id}/${Date.now()}.${ext}`
+        const { error: vidErr } = await supabase.storage.from('videos').upload(path, form.videoFile)
+        if (vidErr) {
+          toast.error('Upload vidéo échoué — vérifie que le bucket "videos" est créé dans Supabase Storage')
+          setPublishing(false)
+          return
+        }
+        const { data: vUrl } = supabase.storage.from('videos').getPublicUrl(path)
+        finalVideoUrl = vUrl.publicUrl
       }
 
       const { error } = await supabase.from('products').insert({
