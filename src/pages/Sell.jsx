@@ -583,7 +583,12 @@ export default function Sell() {
           </Button>
           <Button onClick={suivant} disabled={publishing}
             iconRight={etape === ETAPES.length - 1 ? <CheckCircle size={16}/> : <ArrowRight size={16}/>}>
-            {publishing ? 'Publication...' : etape === ETAPES.length - 1 ? "Publier l'annonce" : 'Continuer'}
+            {publishing
+              ? (editId ? 'Mise à jour...' : 'Publication...')
+              : etape === ETAPES.length - 1
+                ? (editId ? "Enregistrer les modifications" : "Publier l'annonce")
+                : 'Continuer'
+            }
           </Button>
         </div>
       </div>
