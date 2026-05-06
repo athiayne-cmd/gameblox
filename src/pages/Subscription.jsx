@@ -133,11 +133,36 @@ export default function Subscription() {
               <p className="font-heading font-semibold text-gaming-gold">Tu es déjà Premium !</p>
             </div>
           ) : (
-            <Button fullWidth size="lg" onClick={handleSubscribe} disabled={loading}>
-              {loading
-                ? <span className="flex items-center gap-2"><Loader2 size={16} className="animate-spin"/> Redirection…</span>
-                : <span className="flex items-center gap-2"><Zap size={16}/> Devenir Premium — 6 000 FCFA</span>}
-            </Button>
+            <>
+              <div>
+                <label htmlFor="phone" className="block text-xs font-heading font-semibold text-gaming-text-muted uppercase tracking-widest mb-2">
+                  Numéro mobile money
+                </label>
+                <div className="relative">
+                  <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gaming-text-muted pointer-events-none" />
+                  <input
+                    id="phone"
+                    type="tel"
+                    inputMode="tel"
+                    autoComplete="tel"
+                    placeholder="+225 07 00 00 00 00"
+                    value={phone}
+                    onChange={(e) => setPhone(e.target.value)}
+                    disabled={loading}
+                    className="w-full pl-10 pr-3 py-3 rounded-xl bg-gaming-bg-elevated border border-gaming-border text-white font-body text-sm placeholder:text-gaming-text-muted focus:outline-none focus:border-gaming-gold/60 focus:ring-1 focus:ring-gaming-gold/30 transition-colors"
+                  />
+                </div>
+                <p className="text-[11px] text-gaming-text-muted font-body mt-1.5">
+                  Ce numéro recevra la demande de paiement (Wave, Orange Money, MTN, Moov).
+                </p>
+              </div>
+
+              <Button fullWidth size="lg" onClick={handleSubscribe} disabled={loading}>
+                {loading
+                  ? <span className="flex items-center gap-2"><Loader2 size={16} className="animate-spin"/> Redirection…</span>
+                  : <span className="flex items-center gap-2"><Zap size={16}/> Devenir Premium — 6 000 FCFA</span>}
+              </Button>
+            </>
           )}
 
           <p className="text-center text-xs text-gaming-text-muted font-body">
