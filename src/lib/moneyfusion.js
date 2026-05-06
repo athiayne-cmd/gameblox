@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_MONEYFUSION_API_URL
+const API_URL = import.meta.env.VITE_MONEYFUSION_API_URL?.trim()
 
 export async function initPremiumPayment({ userId, name, email, phone }) {
   if (!API_URL) {
