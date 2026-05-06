@@ -1,11 +1,13 @@
-import { NavLink, useNavigate } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { NavLink, useNavigate, useLocation } from 'react-router-dom'
 import { Home, Search, MessageCircle, Grid2X2, User } from 'lucide-react'
 import { useAuth } from '../../contexts/AuthContext'
+import { supabase } from '../../lib/supabase'
 
 const NAV = [
   { path: '/',           icon: Home,          label: 'Accueil',   exact: true  },
   { path: '/marketplace',icon: Search,        label: 'Recherche', exact: false },
-  { path: '/messages',   icon: MessageCircle, label: 'Messages',  exact: false, badge: null },
+  { path: '/messages',   icon: MessageCircle, label: 'Messages',  exact: false },
   { path: '/categories', icon: Grid2X2,       label: 'Catégories',exact: false },
   { path: '/profil',     icon: User,          label: 'Profil',    exact: true  },
 ]
@@ -13,6 +15,37 @@ const NAV = [
 export default function BottomNav() {
   const { user } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const [unreadMsg, setUnreadMsg] = useState(0)
+
+  useEffect(() => {
+    if (!user) { setUnreadMsg(0); return }
+    fetchUnread()
+  }, [user, location.pathname])
+
+  async function fetchUnread() {
+    try {
+      // Compter les messages non lus dans les conversations de l'utilisateur
+      const { data: convs } = await supabase
+        .from('conversations')
+        .select('id')
+        .or(`buyer_id.eq.${user.id},seller_id.eq.${user.id}`)
+
+      if (!convs?.length) { setUnreadMsg(0); return }
+
+      const convIds = convs.map(c => c.id)
+      const { count } = await supabase
+        .from('messages')
+        .select('id', { count: 'exact', head: true })
+        .in('conversation_id', convIds)
+        .neq('sender_id', user.id)
+        .eq('read', false)
+
+      setUnreadMsg(count || 0)
+    } catch {
+      // silent
+    }
+  }
 
   function handleProfile(e) {
     e.preventDefault()
