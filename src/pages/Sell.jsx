@@ -30,6 +30,8 @@ const VILLES_SN = [
 export default function Sell() {
   const { user, profile } = useAuth()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const editId = searchParams.get('edit')
 
   const [etape, setEtape]         = useState(0)
   const [termine, setTermine]     = useState(false)
