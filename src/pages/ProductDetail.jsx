@@ -14,6 +14,7 @@ const isUUID = id => typeof id === 'string' && id.includes('-') && id.length ===
 export default function ProductDetail() {
   const { slug }   = useParams()
   const navigate   = useNavigate()
+  const { user }   = useAuth()
 
   const mockProduct = PRODUCTS.find(p => p.slug === slug)
 
@@ -25,6 +26,46 @@ export default function ProductDetail() {
   const [similar, setSimilar]     = useState([])
 
   const touchStartX = useRef(null)
+
+  // Charger l'état liké depuis Supabase pour les vrais produits
+  useEffect(() => {
+    if (!product || !isUUID(product.id) || !user) return
+    supabase
+      .from('wishlist')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('product_id', product.id)
+      .maybeSingle()
+      .then(({ data }) => setLiked(!!data))
+  }, [product?.id, user?.id])
+
+  async function toggleLike() {
+    if (!product) return
+    if (!isUUID(product.id)) return
+    if (!user) { navigate('/connexion'); return }
+
+    if (liked) {
+      await supabase.from('wishlist').delete()
+        .eq('user_id', user.id).eq('product_id', product.id)
+      setLiked(false)
+    } else {
+      const { error } = await supabase.from('wishlist')
+        .insert({ user_id: user.id, product_id: product.id })
+      if (!error) {
+        setLiked(true)
+        toast.success('Ajouté aux favoris !')
+        if (product.seller?.id && product.seller.id !== user.id) {
+          await supabase.from('notifications').insert({
+            user_id:    product.seller.id,
+            type:       'like',
+            title:      "Quelqu'un a aimé ton annonce",
+            body:       product.title,
+            product_id: product.id,
+          })
+        }
+      }
+    }
+  }
 
   useEffect(() => {
     if (mockProduct) {
