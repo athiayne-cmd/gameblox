@@ -534,8 +534,12 @@ export default function Sell() {
     <div className="min-h-screen py-12">
       <div className="page-container max-w-2xl">
         <div className="mb-8">
-          <h1 className="font-display font-bold text-3xl text-white mb-1">Publier une annonce</h1>
-          <p className="text-gaming-text-muted font-body">Gratuit · En ligne en 5 minutes</p>
+          <h1 className="font-display font-bold text-3xl text-white mb-1">
+            {editId ? 'Modifier mon annonce' : 'Publier une annonce'}
+          </h1>
+          <p className="text-gaming-text-muted font-body">
+            {editId ? 'Mets à jour les informations de ton annonce' : 'Gratuit · En ligne en 5 minutes'}
+          </p>
         </div>
 
         {/* Barre de progression */}
