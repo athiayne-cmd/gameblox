@@ -105,9 +105,9 @@ export default function Login() {
                 required
               />
               <div className="flex justify-end mt-2">
-                <Link to="#" className="text-xs text-gaming-purple hover:text-gaming-purple-light transition-colors font-heading">
+                <button type="button" onClick={() => setResetOpen(true)} className="text-xs text-gaming-purple hover:text-gaming-purple-light transition-colors font-heading">
                   Mot de passe oublié ?
-                </Link>
+                </button>
               </div>
             </div>
 
