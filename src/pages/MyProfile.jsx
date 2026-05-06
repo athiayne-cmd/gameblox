@@ -411,6 +411,69 @@ export default function MyProfile() {
           <span style={{ fontWeight: 700, fontSize: 14, fontFamily: 'Rajdhani, sans-serif' }}>Se déconnecter</span>
         </button>
       </div>
+
+      {/* ── Modal édition profil ── */}
+      {editOpen && (
+        <div
+          style={{ position: 'fixed', inset: 0, zIndex: 50, display: 'flex', alignItems: 'flex-end', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
+          onClick={() => setEditOpen(false)}
+        >
+          <div
+            onClick={e => e.stopPropagation()}
+            style={{ width: '100%', maxWidth: 480, margin: '0 auto', background: '#12002a', borderRadius: '20px 20px 0 0', padding: '20px 20px 40px', border: '1px solid rgba(139,0,255,0.3)', borderBottom: 'none' }}
+          >
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 20 }}>
+              <h3 style={{ margin: 0, color: '#fff', fontFamily: 'Rajdhani, sans-serif', fontSize: 18, fontWeight: 800 }}>
+                Modifier mon profil
+              </h3>
+              <button onClick={() => setEditOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b6b8a', padding: 0 }}>
+                <X size={20} />
+              </button>
+            </div>
+
+            {/* Avatar */}
+            <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+              <input ref={avatarRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarPick} />
+              <button type="button" onClick={() => avatarRef.current?.click()} style={{ width: 72, height: 72, borderRadius: '50%', overflow: 'hidden', border: '2px dashed rgba(139,0,255,0.5)', cursor: 'pointer', background: 'rgba(139,0,255,0.1)', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {avatarPreview || profile?.avatar_url ? (
+                  <img src={avatarPreview || profile?.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                ) : (
+                  <span style={{ color: '#fff', fontFamily: 'Rajdhani, sans-serif', fontWeight: 800, fontSize: 24 }}>{displayName[0]}</span>
+                )}
+                <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Camera size={18} style={{ color: '#fff' }} />
+                </div>
+              </button>
+            </div>
+
+            <form onSubmit={saveProfile} style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#6b6b8a', marginBottom: 6, fontFamily: 'Space Grotesk, sans-serif' }}>Nom complet</label>
+                <input value={editForm.full_name} onChange={e => setEditForm(f => ({ ...f, full_name: e.target.value }))}
+                  placeholder="Ton nom complet"
+                  style={{ width: '100%', background: 'rgba(139,0,255,0.08)', border: '1px solid rgba(139,0,255,0.25)', borderRadius: 12, padding: '10px 14px', fontSize: 14, color: '#fff', outline: 'none', fontFamily: 'Inter, sans-serif', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#6b6b8a', marginBottom: 6, fontFamily: 'Space Grotesk, sans-serif' }}>Téléphone</label>
+                <input value={editForm.phone} onChange={e => setEditForm(f => ({ ...f, phone: e.target.value }))}
+                  placeholder="+221 77 XXX XX XX" type="tel"
+                  style={{ width: '100%', background: 'rgba(139,0,255,0.08)', border: '1px solid rgba(139,0,255,0.25)', borderRadius: 12, padding: '10px 14px', fontSize: 14, color: '#fff', outline: 'none', fontFamily: 'Inter, sans-serif', boxSizing: 'border-box' }} />
+              </div>
+              <div>
+                <label style={{ display: 'block', fontSize: 12, fontWeight: 600, color: '#6b6b8a', marginBottom: 6, fontFamily: 'Space Grotesk, sans-serif' }}>Ville</label>
+                <select value={editForm.location} onChange={e => setEditForm(f => ({ ...f, location: e.target.value }))}
+                  style={{ width: '100%', background: '#1a0038', border: '1px solid rgba(139,0,255,0.25)', borderRadius: 12, padding: '10px 14px', fontSize: 14, color: '#fff', outline: 'none', fontFamily: 'Inter, sans-serif', boxSizing: 'border-box', cursor: 'pointer' }}>
+                  <option value="">Choisir une ville</option>
+                  {VILLES.map(v => <option key={v} value={v}>{v}</option>)}
+                </select>
+              </div>
+              <button type="submit" disabled={editSaving} style={{ marginTop: 4, background: 'linear-gradient(135deg, #8b00ff, #ff00c8)', color: '#fff', border: 'none', borderRadius: 12, padding: '13px 0', fontWeight: 800, fontSize: 14, cursor: 'pointer', fontFamily: 'Rajdhani, sans-serif', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, opacity: editSaving ? 0.7 : 1, boxShadow: '0 0 20px rgba(139,0,255,0.4)' }}>
+                <Save size={16} /> {editSaving ? 'Enregistrement...' : 'Enregistrer'}
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
