@@ -12,8 +12,8 @@ export async function initPremiumPayment({ userId, name, email, phone }) {
         { label: 'Email',     data: email || '' },
         { label: 'Téléphone', data: phone || '' },
       ],
-      successUrl: `https://gameblox.netlify.app/premium/success?user_id=${userId}`,
-      failUrl:    'https://gameblox.netlify.app/premium/cancel',
+      successUrl: `${window.location.origin}/premium/success?user_id=${userId}`,
+      failUrl:    `${window.location.origin}/premium/cancel`,
     }),
   })
 
