@@ -9,12 +9,29 @@ import { supabase } from '../lib/supabase'
 import toast from 'react-hot-toast'
 
 export default function Login() {
-  const [email,    setEmail]    = useState('')
-  const [password, setPassword] = useState('')
-  const [showPwd,  setShowPwd]  = useState(false)
-  const [loading,  setLoading]  = useState(false)
-  const { signIn }              = useAuth()
-  const navigate                = useNavigate()
+  const [email,       setEmail]       = useState('')
+  const [password,    setPassword]    = useState('')
+  const [showPwd,     setShowPwd]     = useState(false)
+  const [loading,     setLoading]     = useState(false)
+  const [resetOpen,   setResetOpen]   = useState(false)
+  const [resetEmail,  setResetEmail]  = useState('')
+  const [resetSending,setResetSending]= useState(false)
+  const { signIn }                    = useAuth()
+  const navigate                      = useNavigate()
+
+  async function handleReset(e) {
+    e.preventDefault()
+    if (!resetEmail) return toast.error('Saisis ton adresse email')
+    setResetSending(true)
+    const { error } = await supabase.auth.resetPasswordForEmail(resetEmail, {
+      redirectTo: `${window.location.origin}/connexion`,
+    })
+    setResetSending(false)
+    if (error) { toast.error('Erreur lors de l\'envoi. Vérifie l\'adresse.'); return }
+    toast.success('Email envoyé ! Vérifie ta boite mail.')
+    setResetOpen(false)
+    setResetEmail('')
+  }
 
   const ERREURS = {
     'Invalid login credentials': 'Email ou mot de passe incorrect.',
