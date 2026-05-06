@@ -13,6 +13,7 @@ const isUUID = id => typeof id === 'string' && id.includes('-') && id.length ===
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart()
+  const { user } = useAuth()
   const navigate = useNavigate()
 
   const [loading, setLoading] = useState(false)
@@ -24,10 +25,31 @@ export default function Checkout() {
 
   async function handleConfirm() {
     setLoading(true)
-    await new Promise(r => setTimeout(r, 800))
-    clearCart()
-    toast.success('Commande confirmée !')
-    navigate('/paiement-succes')
+    try {
+      // Sauvegarder les commandes dans Supabase pour les vrais produits
+      if (user) {
+        const realItems = items.filter(i => isUUID(i.id))
+        await Promise.allSettled(
+          realItems.map(item =>
+            supabase.from('orders').insert({
+              product_id:     item.id,
+              buyer_id:       user.id,
+              seller_id:      item.seller?.id || null,
+              amount:         item.price,
+              payment_method: 'cash_on_delivery',
+              payment_status: 'pending',
+            })
+          )
+        )
+      }
+      clearCart()
+      toast.success('Commande confirmée !')
+      navigate('/paiement-succes')
+    } catch {
+      toast.error('Erreur lors de la confirmation')
+    } finally {
+      setLoading(false)
+    }
   }
 
   return (
