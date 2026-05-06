@@ -102,9 +102,9 @@ export default function Sell() {
     if (etape === 0 && !form.category)  return toast.error('Sélectionne une catégorie')
     if (etape === 1 && (!form.title || !form.description || !form.condition))
       return toast.error('Remplis tous les champs obligatoires')
-    if (etape === 3 && !form.price)     return toast.error('Indique un prix')
-    if (etape === 3 && !form.location)  return toast.error('Indique ta ville')
-    if (etape === 3 && !form.phone)     return toast.error('Indique ton numéro de téléphone')
+    if (etape === 3 && !form.price)                    return toast.error('Indique un prix')
+    if (etape === 3 && !form.location)                 return toast.error('Indique ta ville')
+    if (etape === 3 && !form.phone && !editId)         return toast.error('Indique ton numéro de téléphone')
     if (etape === ETAPES.length - 1)    { publier(); return }
     setEtape(s => s + 1)
   }
