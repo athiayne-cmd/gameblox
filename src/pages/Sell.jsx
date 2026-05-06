@@ -266,15 +266,21 @@ export default function Sell() {
           }
         </p>
         <div className="flex flex-col gap-3">
-          <Button fullWidth onClick={() => {
-            setTermine(false); setEtape(0)
-            setForm({ category:'', title:'', description:'', condition:'', images:[], videoFile:null, videoUrl:'', price:'', location:'', phone:'' })
-            setCheckingLimit(true)
-            checkProductLimit()
-          }}>
-            Publier une autre annonce
-          </Button>
-          <Button variant="secondary" fullWidth onClick={() => window.location.href = '/marketplace'}>
+          {editId ? (
+            <Button fullWidth onClick={() => navigate('/mon-profil')}>
+              Retour à mon profil
+            </Button>
+          ) : (
+            <Button fullWidth onClick={() => {
+              setTermine(false); setEtape(0)
+              setForm({ category:'', title:'', description:'', condition:'', images:[], videoFile:null, videoUrl:'', price:'', location:'', phone:'' })
+              setCheckingLimit(true)
+              checkProductLimit()
+            }}>
+              Publier une autre annonce
+            </Button>
+          )}
+          <Button variant="secondary" fullWidth onClick={() => navigate('/marketplace')}>
             Voir le marketplace
           </Button>
         </div>
