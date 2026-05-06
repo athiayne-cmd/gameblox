@@ -128,8 +128,6 @@ export default function Navbar() {
                   className="relative p-2.5 rounded-xl text-gaming-text-secondary hover:text-gaming-cyan
                              hover:bg-gaming-card/60 transition-all duration-200 border border-transparent hover:border-gaming-border">
                   <MessageCircle size={18} />
-                  <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-gaming-neon rounded-full
-                                   shadow-neon-glow animate-pulse" />
                 </Link>
               )}
 
