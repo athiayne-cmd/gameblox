@@ -75,9 +75,13 @@ export default function Subscription() {
     <div className="min-h-screen py-12">
       <div className="page-container max-w-3xl">
 
-        <Link to="/vendre" className="flex items-center gap-2 text-gaming-text-muted hover:text-gaming-purple transition-colors text-sm font-heading mb-8">
+        <button
+          type="button"
+          onClick={() => (window.history.length > 1 ? navigate(-1) : navigate('/'))}
+          className="flex items-center gap-2 text-gaming-text-muted hover:text-gaming-purple transition-colors text-sm font-heading mb-8"
+        >
           <ArrowLeft size={16}/> Retour
-        </Link>
+        </button>
 
         {/* Header */}
         <div className="text-center mb-12">
