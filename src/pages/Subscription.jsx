@@ -1,9 +1,10 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Check, Zap, ArrowLeft, Loader2 } from 'lucide-react'
+import { Check, Zap, ArrowLeft, Loader2, Phone } from 'lucide-react'
 import { Link, useNavigate } from 'react-router-dom'
 import Button from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 import { initPremiumPayment } from '../lib/moneyfusion'
 import toast from 'react-hot-toast'
 
