@@ -5,19 +5,20 @@ export async function initPremiumPayment({ userId, name, email, phone }) {
     throw new Error('URL MoneyFusion non configurée — ajoute VITE_MONEYFUSION_API_URL dans .env')
   }
 
+  if (!phone) {
+    throw new Error('Numéro de téléphone requis. Ajoute-le dans ton profil.')
+  }
+
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       totalPrice: 6000,
       article: [{ name: 'Abonnement Premium GameBlox', price: 6000, quantite: 1 }],
+      numeroSend: phone,
       nomclient: name || email || 'Client GameBlox',
-      personal_Info: [
-        { label: 'Email',     data: email || '' },
-        { label: 'Téléphone', data: phone || '' },
-      ],
-      successUrl: `${window.location.origin}/premium/success?user_id=${userId}`,
-      failUrl:    `${window.location.origin}/premium/cancel`,
+      personal_Info: [{ userId, email: email || '' }],
+      return_url: `${window.location.origin}/premium/success?user_id=${userId}`,
     }),
   })
 
