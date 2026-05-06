@@ -41,6 +41,7 @@ export default function Messages() {
   const [input, setInput] = useState('')
   const [loading, setLoading] = useState(true)
   const [sending, setSending] = useState(false)
+  const [selectedMsgId, setSelectedMsgId] = useState(null)
   const endRef = useRef(null)
 
   useEffect(() => {
