@@ -10,14 +10,16 @@ const MOCK_THRESHOLD = 10
 export default function Marketplace() {
   const [searchParams] = useSearchParams()
   const [query, setQuery] = useState(() => searchParams.get('q') || '')
-  const [activeCategory, setActiveCategory] = useState('')
+  const [activeCategory, setActiveCategory] = useState(() => searchParams.get('categorie') || '')
   const [realProducts, setRealProducts] = useState([])
   const [loadingReal, setLoadingReal] = useState(true)
 
-  // Sync query si le param URL change (depuis la navbar)
+  // Sync depuis les params URL (navbar search ou clic catégorie)
   useEffect(() => {
-    const q = searchParams.get('q') || ''
-    if (q) setQuery(q)
+    const q   = searchParams.get('q') || ''
+    const cat = searchParams.get('categorie') || ''
+    if (q)   setQuery(q)
+    if (cat) setActiveCategory(cat)
   }, [searchParams])
 
   useEffect(() => {
