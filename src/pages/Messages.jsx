@@ -120,6 +120,21 @@ export default function Messages() {
     }
   }
 
+  async function deleteMessage(msgId) {
+    setSelectedMsgId(null)
+    const { error } = await supabase.from('messages').delete().eq('id', msgId).eq('sender_id', user.id)
+    if (error) return
+
+    const updated = messages.filter(m => m.id !== msgId)
+    setMessages(updated)
+
+    // Mettre à jour last_message de la conversation
+    const lastMsg = updated[updated.length - 1]
+    await supabase.from('conversations')
+      .update({ last_message: lastMsg?.content || '', updated_at: new Date().toISOString() })
+      .eq('id', activeConv.id)
+  }
+
   if (!user) return (
     <div style={{ minHeight: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', background: '#0a0010' }}>
       <div style={{ textAlign: 'center', padding: 40 }}>
