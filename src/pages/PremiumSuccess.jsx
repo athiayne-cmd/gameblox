@@ -4,6 +4,7 @@ import { motion } from 'framer-motion'
 import { Zap, CheckCircle2, Loader2, XCircle } from 'lucide-react'
 import Button from '../components/ui/Button'
 import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 
 export default function PremiumSuccess() {
   const [searchParams]   = useSearchParams()
@@ -12,24 +13,31 @@ export default function PremiumSuccess() {
   const { refreshProfile }    = useAuth()
 
   useEffect(() => {
-    const token  = searchParams.get('token')   || localStorage.getItem('mf_premium_token')
-    const userId = searchParams.get('user_id') || localStorage.getItem('mf_premium_user_id')
-
-    if (!userId) {
+    const token = searchParams.get('token') || localStorage.getItem('mf_premium_token')
+    if (!token) {
       setStatus('error')
-      setMessage('Session introuvable. Contacte le support.')
+      setMessage('Token de paiement introuvable. Contacte le support.')
       return
     }
-
-    activate(token, userId)
+    activate(token)
   }, [])
 
-  async function activate(token, userId) {
+  async function activate(token) {
     try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (!session) {
+        setStatus('error')
+        setMessage('Tu dois être connecté pour activer Premium.')
+        return
+      }
+
       const res  = await fetch('/api/premium-activate', {
         method:  'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ token, userId }),
+        headers: {
+          'Content-Type':  'application/json',
+          'Authorization': `Bearer ${session.access_token}`,
+        },
+        body:    JSON.stringify({ token }),
       })
       const data = await res.json()
 
