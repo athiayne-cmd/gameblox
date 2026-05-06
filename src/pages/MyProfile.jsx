@@ -72,11 +72,13 @@ export default function MyProfile() {
       let avatar_url = profile?.avatar_url || null
       if (newAvatar) {
         const ext  = newAvatar.name.split('.').pop()
-        const path = `${user.id}.${ext}`
+        const path = `${user.id}/${Date.now()}.${ext}`
         const { error: upErr } = await supabase.storage.from('avatars').upload(path, newAvatar, { upsert: true })
-        if (!upErr) {
-          const { data } = supabase.storage.from('avatars').getPublicUrl(path)
-          avatar_url = data.publicUrl
+        if (upErr) {
+          toast.error('Photo non uploadée — crée le bucket "avatars" dans Supabase Storage (public)')
+        } else {
+          const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path)
+          avatar_url = urlData.publicUrl
         }
       }
       const { error } = await supabase.from('profiles').update({
