@@ -37,12 +37,64 @@ function SubscriptionBadge({ isPremium }) {
 }
 
 export default function MyProfile() {
-  const { user, profile, signOut } = useAuth()
+  const { user, profile, signOut, refreshProfile } = useAuth()
   const navigate = useNavigate()
   const [myListings, setMyListings] = useState([])
   const [loadingListings, setLoadingListings] = useState(false)
   const [favCount, setFavCount] = useState(0)
   const [notifCount, setNotifCount] = useState(0)
+  const [editOpen, setEditOpen] = useState(false)
+  const [editForm, setEditForm] = useState({ full_name: '', phone: '', location: '' })
+  const [editSaving, setEditSaving] = useState(false)
+  const [newAvatar, setNewAvatar] = useState(null)
+  const [avatarPreview, setAvatarPreview] = useState(null)
+  const avatarRef = useRef(null)
+
+  function openEdit() {
+    setEditForm({ full_name: profile?.full_name || '', phone: profile?.phone || '', location: profile?.location || '' })
+    setNewAvatar(null)
+    setAvatarPreview(null)
+    setEditOpen(true)
+  }
+
+  function handleAvatarPick(e) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) { toast.error('Image trop lourde (max 5 Mo)'); return }
+    setNewAvatar(file)
+    setAvatarPreview(URL.createObjectURL(file))
+  }
+
+  async function saveProfile(e) {
+    e.preventDefault()
+    setEditSaving(true)
+    try {
+      let avatar_url = profile?.avatar_url || null
+      if (newAvatar) {
+        const ext  = newAvatar.name.split('.').pop()
+        const path = `${user.id}.${ext}`
+        const { error: upErr } = await supabase.storage.from('avatars').upload(path, newAvatar, { upsert: true })
+        if (!upErr) {
+          const { data } = supabase.storage.from('avatars').getPublicUrl(path)
+          avatar_url = data.publicUrl
+        }
+      }
+      const { error } = await supabase.from('profiles').update({
+        full_name:  editForm.full_name,
+        phone:      editForm.phone,
+        location:   editForm.location,
+        avatar_url,
+      }).eq('id', user.id)
+      if (error) throw error
+      await refreshProfile()
+      toast.success('Profil mis à jour !')
+      setEditOpen(false)
+    } catch {
+      toast.error('Erreur lors de la mise à jour')
+    } finally {
+      setEditSaving(false)
+    }
+  }
 
   useEffect(() => {
     if (user) {
