@@ -163,7 +163,10 @@ export default function ProductCard({ product, index = 0 }) {
         </Link>
 
         <div className="flex items-center justify-between mt-2">
-          <div className="flex items-center gap-1.5">
+          <div
+            className="flex items-center gap-1.5 cursor-pointer"
+            onClick={e => { e.preventDefault(); e.stopPropagation(); if (product.seller?.id) navigate(`/profil/${product.seller.id}`) }}
+          >
             <div
               className="flex items-center justify-center rounded-full text-white font-bold flex-shrink-0"
               style={{
