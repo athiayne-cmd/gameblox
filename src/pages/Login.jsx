@@ -127,6 +127,42 @@ export default function Login() {
           </div>
         </div>
       </motion.div>
+
+      {/* ── Modal mot de passe oublié ── */}
+      <AnimatePresence>
+        {resetOpen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center px-4"
+            style={{ background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(4px)' }}
+            onClick={() => setResetOpen(false)}
+          >
+            <motion.div initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
+              onClick={e => e.stopPropagation()}
+              style={{ background: '#12002a', border: '1px solid rgba(139,0,255,0.3)', borderRadius: 20, padding: 28, width: '100%', maxWidth: 380 }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 16 }}>
+                <h3 style={{ margin: 0, color: '#fff', fontFamily: 'Rajdhani, sans-serif', fontSize: 18, fontWeight: 800 }}>
+                  Réinitialiser le mot de passe
+                </h3>
+                <button onClick={() => setResetOpen(false)} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#6b6b8a', padding: 0 }}>
+                  <X size={20} />
+                </button>
+              </div>
+              <p style={{ color: '#6b6b8a', fontSize: 13, fontFamily: 'Inter, sans-serif', marginBottom: 20 }}>
+                Saisis ton adresse email. Tu recevras un lien pour créer un nouveau mot de passe.
+              </p>
+              <form onSubmit={handleReset}>
+                <Input label="Adresse email" type="email" value={resetEmail}
+                  onChange={e => setResetEmail(e.target.value)}
+                  placeholder="ton@email.com" icon={<Mail size={16}/>} required />
+                <Button type="submit" fullWidth size="lg" loading={resetSending} className="mt-4">
+                  {resetSending ? 'Envoi...' : 'Envoyer le lien'}
+                </Button>
+              </form>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   )
 }
