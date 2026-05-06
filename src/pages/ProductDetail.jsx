@@ -386,9 +386,9 @@ export default function ProductDetail() {
 
       {/* ── CTA fixe ── */}
       <div style={{ position: 'fixed', bottom: 64, left: '50%', transform: 'translateX(-50%)', width: 'min(440px, 100%)', padding: '10px 14px', background: 'rgba(10,0,16,0.95)', borderTop: '1px solid rgba(139,0,255,0.2)', backdropFilter: 'blur(20px)', zIndex: 30 }}>
-        <Link to="/messages" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', background: 'linear-gradient(135deg, #8b00ff, #ff00c8)', color: '#fff', border: 'none', borderRadius: 12, padding: '13px 0', fontWeight: 800, fontSize: 14, cursor: 'pointer', fontFamily: 'Rajdhani, sans-serif', textDecoration: 'none', boxShadow: '0 0 25px rgba(139,0,255,0.4)' }}>
-          <MessageCircle size={16} /> Discuter avec le vendeur
-        </Link>
+        <button onClick={handleContact} disabled={contacting} style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, width: '100%', background: 'linear-gradient(135deg, #8b00ff, #ff00c8)', color: '#fff', border: 'none', borderRadius: 12, padding: '13px 0', fontWeight: 800, fontSize: 14, cursor: 'pointer', fontFamily: 'Rajdhani, sans-serif', boxShadow: '0 0 25px rgba(139,0,255,0.4)', opacity: contacting ? 0.7 : 1 }}>
+          <MessageCircle size={16} /> {contacting ? 'Chargement...' : 'Discuter avec le vendeur'}
+        </button>
       </div>
     </div>
   )
