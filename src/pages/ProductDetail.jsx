@@ -129,6 +129,7 @@ export default function ProductDetail() {
         }
         setProduct(p)
         setLoading(false)
+        supabase.from('products').update({ views: (data.views || 0) + 1 }).eq('id', data.id).then(() => {})
         supabase
           .from('products')
           .select('*, profiles(full_name, username, location)')
