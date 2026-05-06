@@ -256,10 +256,14 @@ export default function Sell() {
           className="w-20 h-20 mx-auto mb-6 rounded-full bg-gaming-neon/10 border border-gaming-neon/30 flex items-center justify-center">
           <CheckCircle size={40} className="text-gaming-neon" />
         </motion.div>
-        <h2 className="font-display font-bold text-3xl text-white mb-3">Annonce publiée !</h2>
+        <h2 className="font-display font-bold text-3xl text-white mb-3">
+          {editId ? 'Annonce modifiée !' : 'Annonce publiée !'}
+        </h2>
         <p className="text-gaming-text-muted font-body mb-8 leading-relaxed">
-          Ton annonce <strong className="text-white">"{form.title}"</strong> est maintenant visible
-          par des milliers d'acheteurs au Sénégal.
+          {editId
+            ? <>Ton annonce <strong className="text-white">"{form.title}"</strong> a été mise à jour avec succès.</>
+            : <>Ton annonce <strong className="text-white">"{form.title}"</strong> est maintenant visible par des milliers d'acheteurs au Sénégal.</>
+          }
         </p>
         <div className="flex flex-col gap-3">
           <Button fullWidth onClick={() => {
