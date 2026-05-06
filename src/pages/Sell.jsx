@@ -51,6 +51,36 @@ export default function Sell() {
     else checkProductLimit()
   }, [user])
 
+  async function loadEditProduct() {
+    setCheckingLimit(true)
+    try {
+      const { data, error } = await supabase
+        .from('products')
+        .select('*')
+        .eq('id', editId)
+        .eq('seller_id', user.id)
+        .single()
+      if (error || !data) { toast.error('Annonce introuvable'); navigate('/mon-profil'); return }
+      setForm({
+        category:    data.category || '',
+        title:       data.title    || '',
+        description: data.description || '',
+        condition:   data.condition || '',
+        images:      (data.images || []).map(url => ({ url, file: null })),
+        videoFile:   null,
+        videoUrl:    data.video_url || '',
+        price:       data.price ? String(data.price) : '',
+        location:    data.location || '',
+        phone:       '',
+      })
+      if (data.video_url) setVideoMode('url')
+    } catch {
+      toast.error('Erreur lors du chargement')
+    } finally {
+      setCheckingLimit(false)
+    }
+  }
+
   async function checkProductLimit() {
     if (profile?.is_premium) { setCheckingLimit(false); return }
     try {
