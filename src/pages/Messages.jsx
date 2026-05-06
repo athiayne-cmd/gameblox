@@ -185,7 +185,7 @@ export default function Messages() {
           <button onClick={() => { setActiveConv(null); setMessages([]) }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#8b00ff', padding: 0 }}>
             <ArrowLeft size={22} />
           </button>
-          <Avatar name={otherName} size={36} />
+          <Avatar name={otherName} avatarUrl={other?.avatar_url} size={36} />
           <div>
             <p style={{ margin: 0, fontWeight: 700, fontSize: 14, fontFamily: 'Rajdhani, sans-serif', color: '#fff' }}>{otherName}</p>
             {productTitle && (
