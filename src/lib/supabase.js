@@ -170,6 +170,11 @@ export const supabase = createClient(supabaseUrl, supabaseKey)
     created_at     timestamptz default now()
   );
 
+  -- Notifications
+  -- alter table notifications enable row level security;
+  -- create policy "notif_owner" on notifications for all using (auth.uid() = user_id) with check (auth.uid() = user_id);
+  -- Note : pour l'INSERT des likes (sender → destinataire), utilise le service role ou désactive le RLS sur notifications
+
   -- Avis
   create table reviews (
     id           uuid primary key default gen_random_uuid(),
