@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 
-function Avatar({ name = '?', size = 44 }) {
+function Avatar({ name = '?', avatarUrl = null, size = 44 }) {
   const colors = ['#8b00ff', '#7b1fa2', '#1565c0', '#00695c', '#c62828', '#e65100']
   const color = colors[(name.charCodeAt(0) || 0) % colors.length]
   return (
@@ -13,9 +13,12 @@ function Avatar({ name = '?', size = 44 }) {
       background: color, color: '#fff',
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       fontWeight: 700, fontSize: size * 0.38, flexShrink: 0,
-      fontFamily: 'Rajdhani, sans-serif',
+      fontFamily: 'Rajdhani, sans-serif', overflow: 'hidden',
     }}>
-      {name[0]?.toUpperCase() || '?'}
+      {avatarUrl
+        ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        : name[0]?.toUpperCase() || '?'
+      }
     </div>
   )
 }
