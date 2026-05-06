@@ -112,6 +112,11 @@ export const supabase = createClient(supabaseUrl, supabaseKey)
     updated_at   timestamptz default now()
   );
 
+  alter table conversations enable row level security;
+  create policy "conv_access" on conversations for all
+    using (auth.uid() = buyer_id or auth.uid() = seller_id)
+    with check (auth.uid() = buyer_id or auth.uid() = seller_id);
+
   -- Messages
   create table messages (
     id              uuid primary key default gen_random_uuid(),
@@ -121,6 +126,17 @@ export const supabase = createClient(supabaseUrl, supabaseKey)
     read            boolean default false,
     created_at      timestamptz default now()
   );
+
+  alter table messages enable row level security;
+  create policy "msg_access" on messages for all
+    using (
+      exists (
+        select 1 from conversations c
+        where c.id = conversation_id
+        and (c.buyer_id = auth.uid() or c.seller_id = auth.uid())
+      )
+    )
+    with check (auth.uid() = sender_id);
 
   -- Commandes
   create table orders (
