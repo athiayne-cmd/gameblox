@@ -39,6 +39,42 @@ export default function ProductDetail() {
       .then(({ data }) => setLiked(!!data))
   }, [product?.id, user?.id])
 
+  const [contacting, setContacting] = useState(false)
+
+  async function handleContact() {
+    if (!user) { navigate('/connexion'); return }
+    if (!product || !isUUID(product.id)) return
+    if (product.seller?.id === user.id) { toast.error('C\'est ton propre produit !'); return }
+
+    setContacting(true)
+    try {
+      const { data: existing } = await supabase
+        .from('conversations')
+        .select('id')
+        .eq('product_id', product.id)
+        .eq('buyer_id', user.id)
+        .eq('seller_id', product.seller.id)
+        .maybeSingle()
+
+      let convId = existing?.id
+      if (!convId) {
+        const { data: created, error } = await supabase
+          .from('conversations')
+          .insert({ product_id: product.id, buyer_id: user.id, seller_id: product.seller.id, last_message: '', updated_at: new Date().toISOString() })
+          .select('id')
+          .single()
+        if (error) throw error
+        convId = created.id
+      }
+
+      navigate('/messages', { state: { convId } })
+    } catch {
+      toast.error('Erreur lors de l\'ouverture du chat')
+    } finally {
+      setContacting(false)
+    }
+  }
+
   async function toggleLike() {
     if (!product) return
     if (!isUUID(product.id)) return
