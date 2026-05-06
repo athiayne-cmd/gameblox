@@ -25,7 +25,8 @@ export async function initPremiumPayment({ userId, name, email, phone }) {
   if (!res.ok) throw new Error('Erreur réseau Money Fusion')
 
   const data = await res.json()
-  if (!data.statut || !data.payment_url) {
+  const paymentUrl = data.url || data.payment_url
+  if (!data.statut || !paymentUrl) {
     throw new Error(data.message || 'Paiement non initialisé')
   }
 
@@ -33,5 +34,5 @@ export async function initPremiumPayment({ userId, name, email, phone }) {
   localStorage.setItem('mf_premium_token',   data.token   || '')
   localStorage.setItem('mf_premium_user_id', userId)
 
-  return data.payment_url
+  return paymentUrl
 }
