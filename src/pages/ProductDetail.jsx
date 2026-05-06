@@ -6,6 +6,10 @@ import { formatPrice, CONDITIONS } from '../utils/formatters'
 import ProductCard from '../components/ui/ProductCard'
 import VideoPlayer from '../components/ui/VideoPlayer'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../contexts/AuthContext'
+import toast from 'react-hot-toast'
+
+const isUUID = id => typeof id === 'string' && id.includes('-') && id.length === 36
 
 export default function ProductDetail() {
   const { slug }   = useParams()
