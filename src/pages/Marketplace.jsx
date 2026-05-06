@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Search } from 'lucide-react'
 import ProductCard from '../components/ui/ProductCard'
 import { PRODUCTS, CATEGORIES } from '../utils/mockData'
@@ -7,10 +8,17 @@ import { supabase } from '../lib/supabase'
 const MOCK_THRESHOLD = 10
 
 export default function Marketplace() {
-  const [query, setQuery] = useState('')
+  const [searchParams] = useSearchParams()
+  const [query, setQuery] = useState(() => searchParams.get('q') || '')
   const [activeCategory, setActiveCategory] = useState('')
   const [realProducts, setRealProducts] = useState([])
   const [loadingReal, setLoadingReal] = useState(true)
+
+  // Sync query si le param URL change (depuis la navbar)
+  useEffect(() => {
+    const q = searchParams.get('q') || ''
+    if (q) setQuery(q)
+  }, [searchParams])
 
   useEffect(() => {
     supabase
