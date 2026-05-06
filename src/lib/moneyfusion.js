@@ -1,6 +1,10 @@
 const API_URL = import.meta.env.VITE_MONEYFUSION_API_URL
 
 export async function initPremiumPayment({ userId, name, email, phone }) {
+  if (!API_URL) {
+    throw new Error('URL MoneyFusion non configurée — ajoute VITE_MONEYFUSION_API_URL dans .env')
+  }
+
   const res = await fetch(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
