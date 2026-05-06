@@ -24,9 +24,14 @@ const FEATURES_PREMIUM = [
 ]
 
 export default function Subscription() {
-  const { user, profile } = useAuth()
+  const { user, profile, refreshProfile } = useAuth()
   const navigate = useNavigate()
   const [loading, setLoading] = useState(false)
+  const [phone, setPhone] = useState('')
+
+  useEffect(() => {
+    if (profile?.phone) setPhone(profile.phone)
+  }, [profile?.phone])
 
   async function handleSubscribe() {
     if (!user) {
@@ -39,13 +44,24 @@ export default function Subscription() {
       return
     }
 
+    const cleanPhone = phone.replace(/\s+/g, '')
+    if (!/^\+?\d{8,15}$/.test(cleanPhone)) {
+      toast.error('Numéro invalide. Format: +225XXXXXXXXXX ou 0XXXXXXXXX')
+      return
+    }
+
     setLoading(true)
     try {
+      if (cleanPhone !== profile?.phone) {
+        await supabase.from('profiles').update({ phone: cleanPhone }).eq('id', user.id)
+        await refreshProfile()
+      }
+
       const paymentUrl = await initPremiumPayment({
         userId: user.id,
         name:   profile?.full_name || '',
         email:  user.email         || '',
-        phone:  profile?.phone     || '',
+        phone:  cleanPhone,
       })
       window.location.href = paymentUrl
     } catch (err) {
