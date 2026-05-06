@@ -60,6 +60,23 @@ export default function Messages() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
+  // Realtime — nouveaux messages sans rechargement
+  useEffect(() => {
+    if (!activeConv) return
+    const channel = supabase
+      .channel(`messages:${activeConv.id}`)
+      .on('postgres_changes', {
+        event: 'INSERT', schema: 'public', table: 'messages',
+        filter: `conversation_id=eq.${activeConv.id}`,
+      }, payload => {
+        setMessages(prev =>
+          prev.find(m => m.id === payload.new.id) ? prev : [...prev, payload.new]
+        )
+      })
+      .subscribe()
+    return () => supabase.removeChannel(channel)
+  }, [activeConv?.id])
+
   async function loadConversations() {
     setLoading(true)
     try {
