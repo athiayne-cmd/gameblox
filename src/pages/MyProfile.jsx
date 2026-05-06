@@ -186,16 +186,21 @@ export default function MyProfile() {
         <div style={{ position: 'absolute', top: -30, right: -30, width: 160, height: 160, borderRadius: '50%', background: 'rgba(139,0,255,0.15)', filter: 'blur(60px)' }} />
 
         {/* Avatar */}
-        <div style={{
-          width: 72, height: 72, borderRadius: '50%',
-          background: isPremium ? 'linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,140,0,0.2))' : 'rgba(139,0,255,0.2)',
-          margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center',
-          fontSize: 28, fontWeight: 800, color: '#fff', fontFamily: 'Rajdhani, sans-serif',
-          border: isPremium ? '3px solid rgba(255,215,0,0.5)' : '3px solid rgba(139,0,255,0.5)',
-          boxShadow: isPremium ? '0 0 30px rgba(255,215,0,0.25)' : '0 0 30px rgba(139,0,255,0.3)',
-          position: 'relative', zIndex: 1,
-        }}>
-          {displayName[0].toUpperCase()}
+        <div style={{ position: 'relative', display: 'inline-block', margin: '0 auto', zIndex: 1 }}>
+          <div style={{
+            width: 72, height: 72, borderRadius: '50%',
+            background: isPremium ? 'linear-gradient(135deg, rgba(255,215,0,0.3), rgba(255,140,0,0.2))' : 'rgba(139,0,255,0.2)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+            fontSize: 28, fontWeight: 800, color: '#fff', fontFamily: 'Rajdhani, sans-serif',
+            border: isPremium ? '3px solid rgba(255,215,0,0.5)' : '3px solid rgba(139,0,255,0.5)',
+            boxShadow: isPremium ? '0 0 30px rgba(255,215,0,0.25)' : '0 0 30px rgba(139,0,255,0.3)',
+            overflow: 'hidden',
+          }}>
+            {profile?.avatar_url
+              ? <img src={profile.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+              : displayName[0].toUpperCase()
+            }
+          </div>
           {isPremium && (
             <div style={{ position: 'absolute', bottom: -4, right: -4, width: 20, height: 20, background: '#ffd700', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Star size={11} style={{ fill: '#000', color: '#000' }} />
