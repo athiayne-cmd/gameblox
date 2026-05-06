@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
-import { Plus, Heart, Package, Bell, LogOut, Zap, Star, Edit2, Lock, ChevronRight } from 'lucide-react'
+import { Plus, Heart, Package, Bell, LogOut, Zap, Star, Edit2, Lock, ChevronRight, X, Camera, Save } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import { formatPrice } from '../utils/formatters'
 import toast from 'react-hot-toast'
+
+const VILLES = ['Dakar','Thiès','Saint-Louis','Ziguinchor','Mbour','Kaolack','Touba','Diourbel','Rufisque','Louga','Tambacounda','Kolda']
 
 /* ── Petit composant badge abonnement ── */
 function SubscriptionBadge({ isPremium }) {
