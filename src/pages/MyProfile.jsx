@@ -349,7 +349,7 @@ export default function MyProfile() {
                 </div>
                 {/* Bouton modifier — bloqué si pas premium */}
                 <button
-                  onClick={isPremium ? () => {} : handleEditBlocked}
+                  onClick={isPremium ? () => navigate(`/vendre?edit=${listing.id}`) : handleEditBlocked}
                   style={{
                     background: isPremium ? 'rgba(139,0,255,0.15)' : 'rgba(107,107,138,0.1)',
                     border: isPremium ? '1px solid rgba(139,0,255,0.3)' : '1px solid rgba(107,107,138,0.2)',
