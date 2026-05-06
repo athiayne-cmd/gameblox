@@ -72,7 +72,7 @@ export function getVideoDuration(file) {
   })
 }
 
-/* ── Parsing URL YouTube / TikTok ───────────────────────────── */
+/* ── Parsing URL YouTube / TikTok / Supabase Storage ────────── */
 export function parseVideoUrl(url) {
   if (!url || typeof url !== 'string') return null
   const u = url.trim()
@@ -83,7 +83,11 @@ export function parseVideoUrl(url) {
   const tt = u.match(/tiktok\.com\/@[\w.]+\/video\/(\d+)/)
   if (tt) return { type: 'tiktok', id: tt[1], original: u }
 
-  if (u.match(/\.(mp4|webm|mov)(\?|$)/i)) return { type: 'direct', url: u, original: u }
+  // Fichier vidéo direct ou URL Supabase Storage
+  if (
+    u.match(/\.(mp4|webm|mov|avi|mkv)(\?|$)/i) ||
+    u.includes('/storage/v1/object/public/videos/')
+  ) return { type: 'direct', url: u, original: u }
 
   return null
 }
