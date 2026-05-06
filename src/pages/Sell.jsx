@@ -112,9 +112,10 @@ export default function Sell() {
   async function publier() {
     setPublishing(true)
     try {
-      // Upload des images vers Supabase Storage
+      // Upload des images (conserver les URLs existantes, uploader les nouvelles)
       const uploadedUrls = []
       for (const img of form.images) {
+        if (!img.file) { uploadedUrls.push(img.url); continue }
         try {
           const ext = img.file.name.split('.').pop()
           const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
@@ -125,11 +126,6 @@ export default function Sell() {
           }
         } catch { /* image ignorée si upload échoue */ }
       }
-
-      // Génération du slug unique
-      const base = form.title.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
-        .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
-      const slug = `${base}-${Date.now()}`
 
       // Upload vidéo si fichier sélectionné
       let finalVideoUrl = form.videoUrl || null
@@ -146,21 +142,40 @@ export default function Sell() {
         finalVideoUrl = vUrl.publicUrl
       }
 
-      const { error } = await supabase.from('products').insert({
-        title:       form.title,
-        slug,
-        description: form.description,
-        price:       parseInt(form.price),
-        category:    form.category,
-        condition:   form.condition,
-        images:      uploadedUrls,
-        video_url:   finalVideoUrl,
-        seller_id:   user.id,
-        location:    form.location,
-        status:      'active',
-      })
+      if (editId) {
+        // Mode édition — UPDATE
+        const { error } = await supabase.from('products').update({
+          title:       form.title,
+          description: form.description,
+          price:       parseInt(form.price),
+          category:    form.category,
+          condition:   form.condition,
+          images:      uploadedUrls,
+          video_url:   finalVideoUrl,
+          location:    form.location,
+        }).eq('id', editId)
+        if (error) throw error
+      } else {
+        // Mode création — INSERT
+        const base = form.title.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '')
+          .replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+        const slug = `${base}-${Date.now()}`
+        const { error } = await supabase.from('products').insert({
+          title:       form.title,
+          slug,
+          description: form.description,
+          price:       parseInt(form.price),
+          category:    form.category,
+          condition:   form.condition,
+          images:      uploadedUrls,
+          video_url:   finalVideoUrl,
+          seller_id:   user.id,
+          location:    form.location,
+          status:      'active',
+        })
+        if (error) throw error
+      }
 
-      if (error) throw error
       setTermine(true)
     } catch (err) {
       toast.error(err.message || 'Erreur lors de la publication')
