@@ -47,7 +47,8 @@ export default function Sell() {
 
   useEffect(() => {
     if (!user) { navigate('/connexion'); return }
-    checkProductLimit()
+    if (editId) loadEditProduct()
+    else checkProductLimit()
   }, [user])
 
   async function checkProductLimit() {
