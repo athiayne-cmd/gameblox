@@ -301,7 +301,7 @@ export default function Messages() {
                 onClick={() => openConversation(conv)}
                 style={{ background: '#1a0038', borderRadius: 12, padding: '12px 14px', marginBottom: 8, display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer', width: '100%', textAlign: 'left', border: '1px solid rgba(139,0,255,0.2)', boxShadow: '0 2px 12px rgba(0,0,0,0.4)' }}
               >
-                <Avatar name={otherName} size={44} />
+                <Avatar name={otherName} avatarUrl={other?.avatar_url} size={44} />
                 <div style={{ flex: 1, minWidth: 0 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
                     <span style={{ fontWeight: 700, fontSize: 14, fontFamily: 'Rajdhani, sans-serif', color: '#fff' }}>
