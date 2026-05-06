@@ -128,15 +128,34 @@ export const supabase = createClient(supabaseUrl, supabaseKey)
   );
 
   alter table messages enable row level security;
-  create policy "msg_access" on messages for all
+
+  -- Lire : être participant de la conversation
+  create policy "msg_select" on messages for select
     using (
       exists (
         select 1 from conversations c
         where c.id = conversation_id
         and (c.buyer_id = auth.uid() or c.seller_id = auth.uid())
       )
-    )
+    );
+
+  -- Envoyer : être l'expéditeur
+  create policy "msg_insert" on messages for insert
     with check (auth.uid() = sender_id);
+
+  -- Marquer comme lu : être participant
+  create policy "msg_update" on messages for update
+    using (
+      exists (
+        select 1 from conversations c
+        where c.id = conversation_id
+        and (c.buyer_id = auth.uid() or c.seller_id = auth.uid())
+      )
+    );
+
+  -- Supprimer : uniquement l'expéditeur
+  create policy "msg_delete" on messages for delete
+    using (auth.uid() = sender_id);
 
   -- Commandes
   create table orders (
