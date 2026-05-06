@@ -176,6 +176,7 @@ export default function Messages() {
   if (activeConv) {
     const other = activeConv.buyer?.id === user.id ? activeConv.seller : activeConv.buyer
     const otherName = other?.full_name || other?.username || 'Utilisateur'
+    const myName = profile?.full_name || user.email?.split('@')[0] || 'Moi'
     const productTitle = activeConv.products?.title || ''
 
     return (
