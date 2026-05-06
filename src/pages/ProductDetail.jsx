@@ -366,9 +366,9 @@ export default function ProductDetail() {
               <span style={{ fontSize: 10, color: '#00ff88', fontWeight: 700, fontFamily: 'Space Grotesk, sans-serif' }}>✓ Vendeur Premium</span>
             )}
           </div>
-          <Link to="/messages" style={{ background: '#8b00ff', color: '#fff', border: 'none', borderRadius: 20, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5, textDecoration: 'none', boxShadow: '0 0 15px rgba(139,0,255,0.3)', fontFamily: 'Space Grotesk, sans-serif' }}>
-            <MessageCircle size={14} /> Contacter
-          </Link>
+          <button onClick={handleContact} disabled={contacting} style={{ background: '#8b00ff', color: '#fff', border: 'none', borderRadius: 20, padding: '8px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 700, display: 'flex', alignItems: 'center', gap: 5, boxShadow: '0 0 15px rgba(139,0,255,0.3)', fontFamily: 'Space Grotesk, sans-serif', opacity: contacting ? 0.7 : 1 }}>
+            <MessageCircle size={14} /> {contacting ? '...' : 'Contacter'}
+          </button>
         </div>
 
         {/* Annonces similaires */}
