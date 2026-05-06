@@ -164,7 +164,7 @@ export default function MyProfile() {
 
         {/* ── Stats ── */}
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 14 }}>
-          {[[myListings.length || '0', 'Annonces'], ['0', 'Favoris'], ['0', 'Ventes']].map(([val, label]) => (
+          {[[myListings.length || '0', 'Annonces'], [favCount, 'Favoris'], ['0', 'Ventes']].map(([val, label]) => (
             <div key={label} style={{
               background: '#1a0038', borderRadius: 12, padding: '12px 8px', textAlign: 'center',
               border: '1px solid rgba(139,0,255,0.2)',
