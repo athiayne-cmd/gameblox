@@ -176,7 +176,10 @@ export default function Messages() {
           </div>
         </div>
 
-        <div style={{ flex: 1, overflowY: 'auto', padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}>
+        <div
+          style={{ flex: 1, overflowY: 'auto', padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: 8 }}
+          onClick={() => setSelectedMsgId(null)}
+        >
           {messages.length === 0 && (
             <p style={{ textAlign: 'center', color: '#6b6b8a', fontSize: 13, fontFamily: 'Inter, sans-serif', marginTop: 40 }}>
               Commence la conversation 👋
@@ -184,19 +187,38 @@ export default function Messages() {
           )}
           {messages.map(msg => {
             const isMe = msg.sender_id === user.id
+            const isSelected = selectedMsgId === msg.id
             return (
-              <div key={msg.id} style={{ display: 'flex', justifyContent: isMe ? 'flex-end' : 'flex-start' }}>
-                <div style={{
-                  maxWidth: '75%', padding: '9px 13px', borderRadius: 16,
-                  background: isMe ? '#8b00ff' : '#1a0038',
-                  color: '#fff', fontSize: 13, fontFamily: 'Inter, sans-serif',
-                  boxShadow: isMe ? '0 2px 12px rgba(139,0,255,0.3)' : '0 2px 8px rgba(0,0,0,0.4)',
-                  borderBottomRightRadius: isMe ? 4 : 16,
-                  borderBottomLeftRadius: isMe ? 16 : 4,
-                  border: isMe ? 'none' : '1px solid rgba(139,0,255,0.2)',
-                }}>
+              <div key={msg.id} style={{ display: 'flex', flexDirection: 'column', alignItems: isMe ? 'flex-end' : 'flex-start' }}>
+                <div
+                  onClick={e => { e.stopPropagation(); isMe && setSelectedMsgId(isSelected ? null : msg.id) }}
+                  style={{
+                    maxWidth: '75%', padding: '9px 13px', borderRadius: 16,
+                    background: isMe ? (isSelected ? '#6a00cc' : '#8b00ff') : '#1a0038',
+                    color: '#fff', fontSize: 13, fontFamily: 'Inter, sans-serif',
+                    boxShadow: isMe ? '0 2px 12px rgba(139,0,255,0.3)' : '0 2px 8px rgba(0,0,0,0.4)',
+                    borderBottomRightRadius: isMe ? 4 : 16,
+                    borderBottomLeftRadius: isMe ? 16 : 4,
+                    border: isMe ? 'none' : '1px solid rgba(139,0,255,0.2)',
+                    cursor: isMe ? 'pointer' : 'default',
+                    transition: 'background 0.15s',
+                  }}
+                >
                   {msg.content}
                 </div>
+                {isMe && isSelected && (
+                  <button
+                    onClick={e => { e.stopPropagation(); deleteMessage(msg.id) }}
+                    style={{
+                      marginTop: 4, display: 'flex', alignItems: 'center', gap: 5,
+                      background: 'rgba(255,51,85,0.15)', border: '1px solid rgba(255,51,85,0.3)',
+                      borderRadius: 8, padding: '4px 10px', cursor: 'pointer',
+                      color: '#ff3355', fontSize: 11, fontWeight: 600, fontFamily: 'Space Grotesk, sans-serif',
+                    }}
+                  >
+                    <Trash2 size={11} /> Supprimer
+                  </button>
+                )}
               </div>
             )
           })}
