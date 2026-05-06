@@ -4,8 +4,12 @@ import { ArrowLeft, ShieldCheck, Loader2, User, Mail, Phone, MapPin, PackageChec
 import { Link, useNavigate } from 'react-router-dom'
 import Button from '../components/ui/Button'
 import { useCart } from '../contexts/CartContext'
+import { useAuth } from '../contexts/AuthContext'
+import { supabase } from '../lib/supabase'
 import { formatPrice } from '../utils/formatters'
 import toast from 'react-hot-toast'
+
+const isUUID = id => typeof id === 'string' && id.includes('-') && id.length === 36
 
 export default function Checkout() {
   const { items, total, clearCart } = useCart()
