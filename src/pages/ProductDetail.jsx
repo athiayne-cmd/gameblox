@@ -176,7 +176,7 @@ export default function ProductDetail() {
           {product.title}
         </span>
         <button
-          onClick={() => setLiked(l => !l)}
+          onClick={toggleLike}
           style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: liked ? '#ff3355' : '#6b6b8a' }}
         >
           <Heart size={20} style={{ fill: liked ? '#ff3355' : 'none', stroke: liked ? '#ff3355' : '#6b6b8a' }} />
