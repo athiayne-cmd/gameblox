@@ -82,12 +82,16 @@ export const supabase = createClient(supabaseUrl, supabaseKey)
     category       text not null,
     condition      text not null,
     images         text[] default '{}',
+    video_url      text,
     seller_id      uuid references profiles(id),
     status         text default 'active',
     location       text,
     views          int default 0,
     created_at     timestamptz default now()
   );
+
+  -- Si la table existe déjà, ajoute juste la colonne :
+  -- alter table products add column if not exists video_url text;
 
   -- Wishlist
   create table wishlist (
