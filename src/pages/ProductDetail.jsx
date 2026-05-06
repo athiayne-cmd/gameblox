@@ -279,7 +279,7 @@ export default function ProductDetail() {
             </div>
           </div>
           <button
-            onClick={() => setLiked(l => !l)}
+            onClick={toggleLike}
             style={{ background: liked ? 'rgba(255,51,85,0.15)' : '#1a0038', border: `1px solid ${liked ? 'rgba(255,51,85,0.3)' : 'rgba(139,0,255,0.2)'}`, cursor: 'pointer', borderRadius: '50%', width: 42, height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center', color: liked ? '#ff3355' : '#6b6b8a', flexShrink: 0 }}
           >
             <Heart size={20} style={{ fill: liked ? '#ff3355' : 'none', stroke: liked ? '#ff3355' : '#6b6b8a' }} />
