@@ -250,6 +250,7 @@ export default function Sell() {
       }
 
       if (progressId) toast.dismiss(progressId)
+      if (draftKey) localStorage.removeItem(draftKey)
       setTermine(true)
     } catch (err) {
       if (progressId) toast.dismiss(progressId)
