@@ -144,8 +144,8 @@ export default function Profile() {
           boxShadow: isPremium ? '0 0 30px rgba(255,215,0,0.25)' : '0 0 30px rgba(139,0,255,0.3)',
           position: 'relative', zIndex: 1, overflow: 'hidden',
         }}>
-          {profile.avatar_url
-            ? <img src={profile.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          {safeImageUrl(profile.avatar_url)
+            ? <img src={safeImageUrl(profile.avatar_url)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
             : name[0].toUpperCase()}
         </div>
 
