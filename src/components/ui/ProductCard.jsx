@@ -16,7 +16,7 @@ export default function ProductCard({ product, index = 0 }) {
   const [liked, setLiked] = useState(false)
   const [imgErr, setImgErr] = useState(false)
   const cat = CAT_STYLE[product.category] || { emoji: '🎮', gradient: 'from-gaming-surface to-gaming-card' }
-  const displayImg = !imgErr && product.images?.[0] ? product.images[0] : null
+  const displayImg = !imgErr ? safeImageUrl(product.images?.[0]) : null
   const realProduct = isUUID(product.id)
 
   useEffect(() => {
