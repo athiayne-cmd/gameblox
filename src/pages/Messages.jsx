@@ -3,10 +3,12 @@ import { ArrowLeft, Trash2 } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { safeImageUrl } from '../utils/formatters'
 
 function Avatar({ name = '?', avatarUrl = null, size = 44 }) {
   const colors = ['#8b00ff', '#7b1fa2', '#1565c0', '#00695c', '#c62828', '#e65100']
   const color = colors[(name.charCodeAt(0) || 0) % colors.length]
+  const safeUrl = safeImageUrl(avatarUrl)
   return (
     <div style={{
       width: size, height: size, borderRadius: '50%',
@@ -15,8 +17,8 @@ function Avatar({ name = '?', avatarUrl = null, size = 44 }) {
       fontWeight: 700, fontSize: size * 0.38, flexShrink: 0,
       fontFamily: 'Rajdhani, sans-serif', overflow: 'hidden',
     }}>
-      {avatarUrl
-        ? <img src={avatarUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+      {safeUrl
+        ? <img src={safeUrl} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
         : name[0]?.toUpperCase() || '?'
       }
     </div>
