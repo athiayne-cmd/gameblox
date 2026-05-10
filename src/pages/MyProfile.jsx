@@ -442,8 +442,8 @@ export default function MyProfile() {
             <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
               <input ref={avatarRef} type="file" accept="image/*" style={{ display: 'none' }} onChange={handleAvatarPick} />
               <button type="button" onClick={() => avatarRef.current?.click()} style={{ width: 72, height: 72, borderRadius: '50%', overflow: 'hidden', border: '2px dashed rgba(139,0,255,0.5)', cursor: 'pointer', background: 'rgba(139,0,255,0.1)', position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                {avatarPreview || profile?.avatar_url ? (
-                  <img src={avatarPreview || profile?.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                {safeImageUrl(avatarPreview || profile?.avatar_url) ? (
+                  <img src={safeImageUrl(avatarPreview || profile?.avatar_url)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                 ) : (
                   <span style={{ color: '#fff', fontFamily: 'Rajdhani, sans-serif', fontWeight: 800, fontSize: 24 }}>{displayName[0]}</span>
                 )}
