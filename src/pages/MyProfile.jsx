@@ -198,8 +198,8 @@ export default function MyProfile() {
             boxShadow: isPremium ? '0 0 30px rgba(255,215,0,0.25)' : '0 0 30px rgba(139,0,255,0.3)',
             overflow: 'hidden',
           }}>
-            {profile?.avatar_url
-              ? <img src={profile.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            {safeImageUrl(profile?.avatar_url)
+              ? <img src={safeImageUrl(profile.avatar_url)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               : displayName[0].toUpperCase()
             }
           </div>
