@@ -36,8 +36,10 @@ export default function Cart() {
                   initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 20 }}
                   className="gaming-card p-4 flex gap-4">
                   <div className="w-24 h-20 rounded-xl overflow-hidden bg-gaming-surface flex-shrink-0">
-                    <img src={item.images[0]} alt={item.title} className="w-full h-full object-cover"
-                      onError={e => { e.target.style.display='none' }} />
+                    {safeImageUrl(item.images?.[0]) && (
+                      <img src={safeImageUrl(item.images[0])} alt={item.title} className="w-full h-full object-cover"
+                        onError={e => { e.target.style.display='none' }} />
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <Link to={`/produit/${item.slug}`}
