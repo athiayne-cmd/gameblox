@@ -213,8 +213,10 @@ export default function Sell() {
         if (error) throw error
       }
 
+      if (progressId) toast.dismiss(progressId)
       setTermine(true)
     } catch (err) {
+      if (progressId) toast.dismiss(progressId)
       toast.error(err.message || 'Erreur lors de la publication')
     } finally {
       setPublishing(false)
