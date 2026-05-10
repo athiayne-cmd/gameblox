@@ -226,9 +226,9 @@ export default function ProductDetail() {
         onTouchStart={onTouchStart}
         onTouchEnd={onTouchEnd}
       >
-        {displayImages ? (
+        {displayImages && safeImageUrl(displayImages[safeIdx]) ? (
           <img
-            src={displayImages[safeIdx]}
+            src={safeImageUrl(displayImages[safeIdx])}
             alt={product.title}
             style={{ width: '100%', height: '100%', objectFit: 'cover', userSelect: 'none', pointerEvents: 'none' }}
             onError={() => setImgErrors(prev => ({ ...prev, [displayImages[safeIdx]]: true }))}
