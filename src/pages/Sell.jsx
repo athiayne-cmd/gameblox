@@ -215,13 +215,29 @@ export default function Sell() {
     toast.success('Lien vidéo validé !')
   }
 
-  function ajouterPhotos(e) {
+  async function ajouterPhotos(e) {
     const fichiers = Array.from(e.target.files)
+    e.target.value = ''
     if (form.images.length + fichiers.length > 5)
       return toast.error('Maximum 5 photos autorisées')
-    const nouvelles = fichiers.map(f => ({ url: URL.createObjectURL(f), file: f }))
+
+    const loadingId = toast.loading(`Optimisation de ${fichiers.length} photo(s)…`)
+    const nouvelles = []
+    let rejets = 0
+    for (const f of fichiers) {
+      try {
+        const optimisee = await compressImage(f)
+        nouvelles.push({ url: URL.createObjectURL(optimisee), file: optimisee })
+      } catch (err) {
+        rejets++
+        toast.error(`${f.name} : ${err.message}`)
+      }
+    }
+    toast.dismiss(loadingId)
+
+    if (nouvelles.length === 0) return
     set('images', [...form.images, ...nouvelles])
-    toast.success(`${fichiers.length} photo(s) ajoutée(s)`)
+    toast.success(`${nouvelles.length} photo(s) ajoutée(s)${rejets ? ` · ${rejets} refusée(s)` : ''}`)
   }
 
   if (checkingLimit) return (
