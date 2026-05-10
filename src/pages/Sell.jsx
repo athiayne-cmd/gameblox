@@ -45,11 +45,47 @@ export default function Sell() {
   const [videoPreview, setVideoPreview] = useState(null)
   const [publishing, setPublishing]     = useState(false)
 
+  const draftKey = user ? `gameblox_sell_draft_${user.id}` : null
+
   useEffect(() => {
     if (!user) { navigate('/connexion'); return }
-    if (editId) loadEditProduct()
-    else checkProductLimit()
+    if (editId) { loadEditProduct(); return }
+    checkProductLimit()
+    // Restaure un éventuel brouillon
+    try {
+      const saved = JSON.parse(localStorage.getItem(draftKey) || 'null')
+      if (saved && (saved.title || saved.category || saved.description)) {
+        setForm(prev => ({
+          ...prev,
+          ...saved,
+          images: (saved.images || []).map(i => ({ url: i.url, file: null })),
+          videoFile: null,
+        }))
+        toast('Brouillon restauré', { icon: '💾', duration: 2000 })
+      }
+    } catch { /* corrupted draft — ignore */ }
   }, [user])
+
+  // Sauvegarde le brouillon à chaque changement (débounce 500ms)
+  useEffect(() => {
+    if (!user || editId || termine || !draftKey) return
+    const hasContent = form.title || form.category || form.description || form.price
+    if (!hasContent) return
+    const t = setTimeout(() => {
+      try {
+        const draft = {
+          category: form.category, title: form.title, description: form.description,
+          condition: form.condition, videoUrl: form.videoUrl, price: form.price,
+          location: form.location, phone: form.phone,
+          images: form.images
+            .filter(i => i.url && !i.url.startsWith('blob:'))
+            .map(i => ({ url: i.url })),
+        }
+        localStorage.setItem(draftKey, JSON.stringify(draft))
+      } catch { /* quota / serialize error — ignore */ }
+    }, 500)
+    return () => clearTimeout(t)
+  }, [form, user, editId, termine, draftKey])
 
   async function loadEditProduct() {
     setCheckingLimit(true)
