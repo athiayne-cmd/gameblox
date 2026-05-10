@@ -132,9 +132,18 @@ export default function Sell() {
       if (form.videoFile) {
         const ext  = form.videoFile.name.split('.').pop()
         const path = `${user.id}/${Date.now()}.${ext}`
-        const { error: vidErr } = await supabase.storage.from('videos').upload(path, form.videoFile)
+        const { error: vidErr } = await supabase.storage.from('videos').upload(path, form.videoFile, {
+          contentType: form.videoFile.type || 'video/mp4',
+        })
         if (vidErr) {
-          toast.error('Upload vidéo échoué — vérifie que le bucket "videos" est créé dans Supabase Storage')
+          console.error('[upload vidéo] erreur Supabase:', vidErr)
+          const msg = vidErr.message || ''
+          let hint = msg
+          if (/bucket not found/i.test(msg)) hint = 'Bucket "videos" introuvable — crée-le dans Supabase Storage'
+          else if (/row-level security|rls|policy/i.test(msg)) hint = 'RLS bloque l\'upload — ajoute une policy INSERT sur storage.objects pour le bucket "videos"'
+          else if (/payload too large|exceeded/i.test(msg)) hint = 'Vidéo trop lourde pour le bucket — augmente la limite dans Supabase Storage'
+          else if (/mime/i.test(msg)) hint = `Type de fichier "${form.videoFile.type}" non autorisé par le bucket`
+          toast.error(`Upload vidéo échoué : ${hint}`)
           setPublishing(false)
           return
         }
