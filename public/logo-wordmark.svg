@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 240" width="1100" height="240">
+  <defs>
+    <linearGradient id="gbw-text" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8b00ff"/>
+      <stop offset="100%" stop-color="#ff00c8"/>
+    </linearGradient>
+  </defs>
+  <text x="50" y="180"
+        font-family="Rajdhani, 'Arial Black', Impact, 'Helvetica Neue', sans-serif"
+        font-size="180" font-weight="900" letter-spacing="-2">
+    <tspan fill="#ffffff">GAME</tspan><tspan fill="url(#gbw-text)">BLOX</tspan>
+  </text>
+</svg>
