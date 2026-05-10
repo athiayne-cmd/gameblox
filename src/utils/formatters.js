@@ -30,6 +30,19 @@ export function slugify(text) {
     .trim()
 }
 
+// Renvoie l'URL si elle est sûre (https://, http://, /, data:image), sinon null.
+// Bloque javascript:, vbscript:, file://, etc. — défense en profondeur côté client.
+export function safeImageUrl(url) {
+  if (!url || typeof url !== 'string') return null
+  const trimmed = url.trim()
+  if (trimmed.startsWith('https://')) return trimmed
+  if (trimmed.startsWith('http://'))  return trimmed
+  if (trimmed.startsWith('/'))        return trimmed
+  if (trimmed.startsWith('data:image/')) return trimmed
+  if (trimmed.startsWith('blob:'))    return trimmed
+  return null
+}
+
 export const CONDITIONS = {
   new:       { label: 'Neuf',          color: 'bg-gaming-neon/20 text-gaming-neon border-gaming-neon/30' },
   excellent: { label: 'Très bon état', color: 'bg-gaming-cyan/20 text-gaming-cyan border-gaming-cyan/30' },
