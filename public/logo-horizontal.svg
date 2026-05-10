@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 360" width="1500" height="360">
+  <defs>
+    <linearGradient id="gbh-bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#8b00ff"/>
+      <stop offset="100%" stop-color="#ff00c8"/>
+    </linearGradient>
+    <linearGradient id="gbh-text" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#8b00ff"/>
+      <stop offset="100%" stop-color="#ff00c8"/>
+    </linearGradient>
+    <linearGradient id="gbh-shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.18"/>
+      <stop offset="50%" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icône à gauche -->
+  <g transform="translate(20, 20)">
+    <rect width="320" height="320" rx="70" fill="url(#gbh-bg)"/>
+    <rect width="320" height="320" rx="70" fill="url(#gbh-shine)"/>
+    <text x="125" y="240"
+          font-family="Rajdhani, 'Arial Black', Impact, 'Helvetica Neue', sans-serif"
+          font-size="240" font-weight="900" fill="#ffffff"
+          text-anchor="middle" letter-spacing="-5">G</text>
+    <rect x="220" y="220" width="30" height="30" rx="4" fill="#ffd700"/>
+    <rect x="255" y="220" width="30" height="30" rx="4" fill="#00d4ff"/>
+    <rect x="220" y="255" width="30" height="30" rx="4" fill="#00d4ff"/>
+    <rect x="255" y="255" width="30" height="30" rx="4" fill="#ffd700"/>
+  </g>
+
+  <!-- Wordmark à droite -->
+  <text x="380" y="240"
+        font-family="Rajdhani, 'Arial Black', Impact, 'Helvetica Neue', sans-serif"
+        font-size="180" font-weight="900" letter-spacing="-2">
+    <tspan fill="#ffffff">GAME</tspan><tspan fill="url(#gbh-text)">BLOX</tspan>
+  </text>
+</svg>
