@@ -46,6 +46,54 @@ export async function deleteFile(bucket, url) {
   await supabase.storage.from(bucket).remove([path])
 }
 
+/* ── Compression image (resize + qualité) ────────────────────
+   Accepte JPG/PNG/WebP. Retourne un File JPEG optimisé.
+   ─────────────────────────────────────────────────────────── */
+export const MAX_IMAGE_SIZE_MB = 10
+export const IMAGE_MAX_WIDTH   = 1600
+export const IMAGE_QUALITY     = 0.85
+const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
+
+export async function compressImage(file) {
+  if (!ALLOWED_IMAGE_TYPES.includes(file.type))
+    throw new Error(`Format "${file.type || 'inconnu'}" non supporté (JPG, PNG, WebP uniquement)`)
+
+  const sizeMB = file.size / (1024 * 1024)
+  if (sizeMB > MAX_IMAGE_SIZE_MB)
+    throw new Error(`Image trop lourde (max ${MAX_IMAGE_SIZE_MB} Mo, actuel : ${sizeMB.toFixed(1)} Mo)`)
+
+  const dataUrl = await new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload  = () => resolve(reader.result)
+    reader.onerror = () => reject(new Error('Lecture du fichier impossible'))
+    reader.readAsDataURL(file)
+  })
+
+  const img = await new Promise((resolve, reject) => {
+    const i = new Image()
+    i.onload  = () => resolve(i)
+    i.onerror = () => reject(new Error('Image illisible'))
+    i.src = dataUrl
+  })
+
+  const ratio  = img.width > IMAGE_MAX_WIDTH ? IMAGE_MAX_WIDTH / img.width : 1
+  const width  = Math.round(img.width  * ratio)
+  const height = Math.round(img.height * ratio)
+
+  const canvas  = document.createElement('canvas')
+  canvas.width  = width
+  canvas.height = height
+  const ctx = canvas.getContext('2d')
+  ctx.drawImage(img, 0, 0, width, height)
+
+  const blob = await new Promise((resolve, reject) => {
+    canvas.toBlob(b => b ? resolve(b) : reject(new Error('Compression échouée')), 'image/jpeg', IMAGE_QUALITY)
+  })
+
+  const baseName = file.name.replace(/\.[^.]+$/, '')
+  return new File([blob], `${baseName}.jpg`, { type: 'image/jpeg', lastModified: Date.now() })
+}
+
 /* ── Validation vidéo ───────────────────────────────────────── */
 export const MAX_VIDEO_SIZE_MB = 50
 export const MAX_VIDEO_DURATION_S = 30
