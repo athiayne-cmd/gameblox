@@ -111,38 +111,64 @@ export default function Sell() {
 
   async function publier() {
     setPublishing(true)
+    const newImages = form.images.filter(i => i.file)
+    const total     = newImages.length + (form.videoFile ? 1 : 0)
+    const progressId = total > 0 ? toast.loading(`Préparation de l'upload…`) : null
+
     try {
       // Upload des images (conserver les URLs existantes, uploader les nouvelles)
       const uploadedUrls = []
+      const erreursImages = []
+      let done = 0
       for (const img of form.images) {
         if (!img.file) { uploadedUrls.push(img.url); continue }
-        try {
-          const ext = img.file.name.split('.').pop()
-          const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-          const { error: upErr } = await supabase.storage.from('product-images').upload(path, img.file)
-          if (!upErr) {
-            const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(path)
-            uploadedUrls.push(urlData.publicUrl)
-          }
-        } catch { /* image ignorée si upload échoue */ }
+        done++
+        if (progressId) toast.loading(`Upload photo ${done}/${total}…`, { id: progressId })
+
+        const ext  = img.file.name.split('.').pop()
+        const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
+        const { error: upErr } = await uploadWithRetry('product-images', path, img.file, {
+          contentType: img.file.type || 'image/jpeg',
+        })
+        if (upErr) {
+          console.error('[upload image]', upErr)
+          erreursImages.push(img.file.name)
+          continue
+        }
+        const { data: urlData } = supabase.storage.from('product-images').getPublicUrl(path)
+        uploadedUrls.push(urlData.publicUrl)
+      }
+
+      // Si toutes les nouvelles images ont échoué, on stoppe
+      if (newImages.length > 0 && uploadedUrls.length === form.images.length - newImages.length) {
+        if (progressId) toast.dismiss(progressId)
+        toast.error(`Aucune photo n'a pu être uploadée — vérifie ta connexion`)
+        setPublishing(false)
+        return
+      }
+      if (erreursImages.length > 0) {
+        toast.error(`${erreursImages.length} photo(s) non uploadée(s) : ${erreursImages.join(', ')}`)
       }
 
       // Upload vidéo si fichier sélectionné
       let finalVideoUrl = form.videoUrl || null
       if (form.videoFile) {
+        if (progressId) toast.loading(`Upload vidéo…`, { id: progressId })
         const ext  = form.videoFile.name.split('.').pop()
         const path = `${user.id}/${Date.now()}.${ext}`
-        const { error: vidErr } = await supabase.storage.from('videos').upload(path, form.videoFile, {
+        const { error: vidErr } = await uploadWithRetry('videos', path, form.videoFile, {
           contentType: form.videoFile.type || 'video/mp4',
         })
         if (vidErr) {
           console.error('[upload vidéo] erreur Supabase:', vidErr)
           const msg = vidErr.message || ''
           let hint = msg
-          if (/bucket not found/i.test(msg)) hint = 'Bucket "videos" introuvable — crée-le dans Supabase Storage'
-          else if (/row-level security|rls|policy/i.test(msg)) hint = 'RLS bloque l\'upload — ajoute une policy INSERT sur storage.objects pour le bucket "videos"'
-          else if (/payload too large|exceeded/i.test(msg)) hint = 'Vidéo trop lourde pour le bucket — augmente la limite dans Supabase Storage'
-          else if (/mime/i.test(msg)) hint = `Type de fichier "${form.videoFile.type}" non autorisé par le bucket`
+          if (/bucket not found/i.test(msg)) hint = 'Bucket "videos" introuvable'
+          else if (/row-level|policy/i.test(msg)) hint = 'RLS bloque l\'upload — policy INSERT manquante'
+          else if (/payload too large|exceeded/i.test(msg)) hint = 'Vidéo trop lourde pour le bucket'
+          else if (/mime/i.test(msg)) hint = `Type "${form.videoFile.type}" non autorisé`
+          else if (/network|fetch|timeout/i.test(msg)) hint = 'Connexion instable — réessaie sur un meilleur réseau'
+          if (progressId) toast.dismiss(progressId)
           toast.error(`Upload vidéo échoué : ${hint}`)
           setPublishing(false)
           return
@@ -150,6 +176,8 @@ export default function Sell() {
         const { data: vUrl } = supabase.storage.from('videos').getPublicUrl(path)
         finalVideoUrl = vUrl.publicUrl
       }
+
+      if (progressId) toast.loading(`Publication en cours…`, { id: progressId })
 
       if (editId) {
         // Mode édition — UPDATE
