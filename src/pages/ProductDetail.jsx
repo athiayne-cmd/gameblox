@@ -347,8 +347,8 @@ export default function ProductDetail() {
         {/* Vendeur */}
         <div style={{ marginTop: 10, padding: 14, background: '#1a0038', borderRadius: 12, display: 'flex', alignItems: 'center', gap: 12, border: '1px solid rgba(139,0,255,0.2)' }}>
           <div style={{ width: 44, height: 44, borderRadius: '50%', background: 'linear-gradient(135deg, #8b00ff, #ff00c8)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, fontWeight: 800, color: '#fff', fontFamily: 'Rajdhani, sans-serif', flexShrink: 0, overflow: 'hidden' }}>
-            {product.seller?.avatar_url
-              ? <img src={product.seller.avatar_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            {safeImageUrl(product.seller?.avatar_url)
+              ? <img src={safeImageUrl(product.seller.avatar_url)} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               : (product.seller?.name?.[0] || '?')}
           </div>
           <div style={{ flex: 1 }}>
