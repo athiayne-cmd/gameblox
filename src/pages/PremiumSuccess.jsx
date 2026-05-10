@@ -47,10 +47,17 @@ export default function PremiumSuccess() {
         await refreshProfile()
         setStatus('success')
       } else {
+        // Erreurs serveur définitives (token invalide, déjà consommé, mauvais user, etc.)
+        // → pas la peine de garder le token en localStorage
+        if (res.status >= 400 && res.status < 500) {
+          localStorage.removeItem('mf_premium_token')
+          localStorage.removeItem('mf_premium_user_id')
+        }
         setStatus('error')
         setMessage(data.message || 'Activation échouée.')
       }
     } catch {
+      // Erreur réseau — on garde le token pour permettre un retry
       setStatus('error')
       setMessage('Erreur réseau. Réessaie ou contacte le support.')
     }
