@@ -46,21 +46,37 @@ export async function deleteFile(bucket, url) {
   await supabase.storage.from(bucket).remove([path])
 }
 
-/* ── Compression image (resize + qualité) ────────────────────
-   Accepte JPG/PNG/WebP. Retourne un File JPEG optimisé.
-   ─────────────────────────────────────────────────────────── */
-export const MAX_IMAGE_SIZE_MB = 10
-export const IMAGE_MAX_WIDTH   = 1600
-export const IMAGE_QUALITY     = 0.85
+/* ── Détection mobile / connexion lente ─────────────────────── */
+export function isMobileOrSlow() {
+  if (typeof navigator !== 'undefined' && navigator.connection) {
+    const t = navigator.connection.effectiveType
+    if (t === 'slow-2g' || t === '2g' || t === '3g') return true
+  }
+  if (typeof window !== 'undefined' && window.matchMedia) {
+    return window.matchMedia('(max-width: 768px)').matches
+  }
+  return false
+}
+
+/* ── Compression image (resize + qualité, adaptée au device) ── */
+export const MAX_IMAGE_SIZE_MB    = 10
+export const IMAGE_MAX_WIDTH      = 1600
+export const IMAGE_QUALITY        = 0.85
+export const IMAGE_MAX_WIDTH_MOB  = 1200
+export const IMAGE_QUALITY_MOB    = 0.80
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp']
 
-export async function compressImage(file) {
+export async function compressImage(file, opts = {}) {
   if (!ALLOWED_IMAGE_TYPES.includes(file.type))
     throw new Error(`Format "${file.type || 'inconnu'}" non supporté (JPG, PNG, WebP uniquement)`)
 
   const sizeMB = file.size / (1024 * 1024)
   if (sizeMB > MAX_IMAGE_SIZE_MB)
     throw new Error(`Image trop lourde (max ${MAX_IMAGE_SIZE_MB} Mo, actuel : ${sizeMB.toFixed(1)} Mo)`)
+
+  const mobile   = opts.isMobile ?? isMobileOrSlow()
+  const maxWidth = opts.maxWidth ?? (mobile ? IMAGE_MAX_WIDTH_MOB : IMAGE_MAX_WIDTH)
+  const quality  = opts.quality  ?? (mobile ? IMAGE_QUALITY_MOB   : IMAGE_QUALITY)
 
   const dataUrl = await new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -76,7 +92,7 @@ export async function compressImage(file) {
     i.src = dataUrl
   })
 
-  const ratio  = img.width > IMAGE_MAX_WIDTH ? IMAGE_MAX_WIDTH / img.width : 1
+  const ratio  = img.width > maxWidth ? maxWidth / img.width : 1
   const width  = Math.round(img.width  * ratio)
   const height = Math.round(img.height * ratio)
 
@@ -87,11 +103,30 @@ export async function compressImage(file) {
   ctx.drawImage(img, 0, 0, width, height)
 
   const blob = await new Promise((resolve, reject) => {
-    canvas.toBlob(b => b ? resolve(b) : reject(new Error('Compression échouée')), 'image/jpeg', IMAGE_QUALITY)
+    canvas.toBlob(b => b ? resolve(b) : reject(new Error('Compression échouée')), 'image/jpeg', quality)
   })
 
   const baseName = file.name.replace(/\.[^.]+$/, '')
   return new File([blob], `${baseName}.jpg`, { type: 'image/jpeg', lastModified: Date.now() })
+}
+
+/* ── Upload avec retry exponentiel ──────────────────────────── */
+const PERMANENT_ERROR_RE = /bucket not found|row-level|policy|payload too large|mime|exceeded the maximum|invalid file/i
+
+export async function uploadWithRetry(bucket, path, file, opts = {}, retries = 2) {
+  let lastErr = null
+  for (let attempt = 0; attempt <= retries; attempt++) {
+    try {
+      const { error } = await supabase.storage.from(bucket).upload(path, file, { upsert: true, ...opts })
+      if (!error) return { error: null }
+      lastErr = error
+      if (PERMANENT_ERROR_RE.test(error.message || '')) break
+    } catch (err) {
+      lastErr = err
+    }
+    if (attempt < retries) await new Promise(r => setTimeout(r, 1000 * Math.pow(2, attempt)))
+  }
+  return { error: lastErr }
 }
 
 /* ── Validation vidéo ───────────────────────────────────────── */
