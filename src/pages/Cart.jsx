@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Trash2, ShoppingCart, ArrowRight, ShieldCheck } from 'lucide-react'
 import { useCart } from '../contexts/CartContext'
-import { formatPrice } from '../utils/formatters'
+import { formatPrice, safeImageUrl } from '../utils/formatters'
 import Button from '../components/ui/Button'
 
 export default function Cart() {
