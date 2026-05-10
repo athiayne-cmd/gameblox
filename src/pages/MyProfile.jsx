@@ -337,8 +337,8 @@ export default function MyProfile() {
                 border: '1px solid rgba(139,0,255,0.2)',
               }}>
                 <div style={{ width: 40, height: 40, borderRadius: 8, background: '#120020', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 18, flexShrink: 0, overflow: 'hidden' }}>
-                  {listing.images?.[0] ? (
-                    <img src={listing.images[0]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  {safeImageUrl(listing.images?.[0]) ? (
+                    <img src={safeImageUrl(listing.images[0])} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
                   ) : '🎮'}
                 </div>
                 <div style={{ flex: 1, minWidth: 0 }}>
