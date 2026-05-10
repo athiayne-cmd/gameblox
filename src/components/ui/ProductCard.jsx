@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Heart, MapPin, Star } from 'lucide-react'
-import { formatPrice } from '../../utils/formatters'
+import { formatPrice, safeImageUrl } from '../../utils/formatters'
 import { CAT_STYLE, SPONSORS } from '../../utils/mockData'
 import { useAuth } from '../../contexts/AuthContext'
 import { supabase } from '../../lib/supabase'
