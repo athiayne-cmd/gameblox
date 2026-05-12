@@ -65,21 +65,49 @@ export default function Messages() {
     endRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages])
 
-  // Realtime — nouveaux messages sans rechargement
+  // Realtime + polling de secours — nouveaux messages sans rechargement
   useEffect(() => {
     if (!activeConv) return
+    const convId = activeConv.id
+
     const channel = supabase
-      .channel(`messages:${activeConv.id}`)
+      .channel(`messages:${convId}`)
       .on('postgres_changes', {
         event: 'INSERT', schema: 'public', table: 'messages',
-        filter: `conversation_id=eq.${activeConv.id}`,
+        filter: `conversation_id=eq.${convId}`,
       }, payload => {
         setMessages(prev =>
           prev.find(m => m.id === payload.new.id) ? prev : [...prev, payload.new]
         )
       })
+      .on('postgres_changes', {
+        event: 'DELETE', schema: 'public', table: 'messages',
+        filter: `conversation_id=eq.${convId}`,
+      }, payload => {
+        setMessages(prev => prev.filter(m => m.id !== payload.old.id))
+      })
       .subscribe()
-    return () => supabase.removeChannel(channel)
+
+    // Filet de sécurité : si Realtime échoue, on rafraîchit toutes les 3s
+    const poll = setInterval(async () => {
+      const { data } = await supabase
+        .from('messages')
+        .select('id, content, sender_id, created_at')
+        .eq('conversation_id', convId)
+        .order('created_at', { ascending: true })
+      if (!data) return
+      setMessages(prev => {
+        if (data.length !== prev.length) return data
+        if (data.length === 0) return prev
+        if (data[data.length - 1].id !== prev[prev.length - 1].id) return data
+        return prev
+      })
+    }, 3000)
+
+    return () => {
+      clearInterval(poll)
+      supabase.removeChannel(channel)
+    }
   }, [activeConv?.id])
 
   async function loadConversations() {
