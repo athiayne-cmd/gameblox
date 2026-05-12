@@ -21,27 +21,39 @@ export default function ProductDetail() {
   const [product, setProduct]     = useState(mockProduct || null)
   const [loading, setLoading]     = useState(!mockProduct)
   const [liked, setLiked]         = useState(false)
+  const [likeBusy, setLikeBusy]   = useState(false)
   const [activeImg, setActiveImg] = useState(0)
   const [imgErrors, setImgErrors] = useState({})
   const [similar, setSimilar]     = useState([])
 
   const touchStartX = useRef(null)
 
-  // Charger l'état liké depuis Supabase pour les vrais produits
+  // Charger l'état liké depuis Supabase pour les vrais produits + resync au focus
   useEffect(() => {
     if (!product || !isUUID(product.id) || !user) return
-    supabase
-      .from('wishlist')
-      .select('id')
-      .eq('user_id', user.id)
-      .eq('product_id', product.id)
-      .maybeSingle()
-      .then(({ data }) => setLiked(!!data))
+    let cancelled = false
+    const fetchLiked = () => {
+      supabase
+        .from('wishlist')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('product_id', product.id)
+        .maybeSingle()
+        .then(({ data }) => { if (!cancelled) setLiked(!!data) })
+    }
+    fetchLiked()
+    const onFocus = () => { if (document.visibilityState === 'visible') fetchLiked() }
+    document.addEventListener('visibilitychange', onFocus)
+    return () => {
+      cancelled = true
+      document.removeEventListener('visibilitychange', onFocus)
+    }
   }, [product?.id, user?.id])
 
   const [contacting, setContacting] = useState(false)
 
   async function handleContact() {
+    if (contacting) return
     if (!user) { navigate('/connexion'); return }
     if (!product || !isUUID(product.id)) return
     if (product.seller?.id === user.id) { toast.error('C\'est ton propre produit !'); return }
@@ -76,30 +88,42 @@ export default function ProductDetail() {
   }
 
   async function toggleLike() {
-    if (!product) return
-    if (!isUUID(product.id)) return
+    if (likeBusy) return
+    if (!product || !isUUID(product.id)) return
     if (!user) { navigate('/connexion'); return }
 
-    if (liked) {
-      await supabase.from('wishlist').delete()
-        .eq('user_id', user.id).eq('product_id', product.id)
-      setLiked(false)
-    } else {
-      const { error } = await supabase.from('wishlist')
-        .insert({ user_id: user.id, product_id: product.id })
-      if (!error) {
-        setLiked(true)
+    const wasLiked = liked
+    setLikeBusy(true)
+    setLiked(!wasLiked) // optimistic
+
+    try {
+      if (wasLiked) {
+        const { error } = await supabase.from('wishlist').delete()
+          .eq('user_id', user.id).eq('product_id', product.id)
+        if (error) throw error
+      } else {
+        const { error } = await supabase.from('wishlist')
+          .insert({ user_id: user.id, product_id: product.id })
+        if (error) throw error
         toast.success('Ajouté aux favoris !')
         if (product.seller?.id && product.seller.id !== user.id) {
-          await supabase.from('notifications').insert({
+          supabase.from('notifications').insert({
             user_id:    product.seller.id,
             type:       'like',
             title:      "Quelqu'un a aimé ton annonce",
             body:       product.title,
             product_id: product.id,
+          }).then(({ error: notifErr }) => {
+            if (notifErr) console.error('[wishlist notif]', notifErr)
           })
         }
       }
+    } catch (err) {
+      console.error('[wishlist toggle]', err)
+      setLiked(wasLiked) // rollback
+      toast.error('Impossible de mettre à jour les favoris')
+    } finally {
+      setLikeBusy(false)
     }
   }
 
@@ -214,7 +238,8 @@ export default function ProductDetail() {
         </span>
         <button
           onClick={toggleLike}
-          style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0, color: liked ? '#ff3355' : '#6b6b8a' }}
+          disabled={likeBusy}
+          style={{ background: 'none', border: 'none', cursor: likeBusy ? 'wait' : 'pointer', padding: 0, color: liked ? '#ff3355' : '#6b6b8a', opacity: likeBusy ? 0.6 : 1 }}
         >
           <Heart size={20} style={{ fill: liked ? '#ff3355' : 'none', stroke: liked ? '#ff3355' : '#6b6b8a' }} />
         </button>
@@ -317,7 +342,8 @@ export default function ProductDetail() {
           </div>
           <button
             onClick={toggleLike}
-            style={{ background: liked ? 'rgba(255,51,85,0.15)' : '#1a0038', border: `1px solid ${liked ? 'rgba(255,51,85,0.3)' : 'rgba(139,0,255,0.2)'}`, cursor: 'pointer', borderRadius: '50%', width: 42, height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center', color: liked ? '#ff3355' : '#6b6b8a', flexShrink: 0 }}
+            disabled={likeBusy}
+            style={{ background: liked ? 'rgba(255,51,85,0.15)' : '#1a0038', border: `1px solid ${liked ? 'rgba(255,51,85,0.3)' : 'rgba(139,0,255,0.2)'}`, cursor: likeBusy ? 'wait' : 'pointer', borderRadius: '50%', width: 42, height: 42, display: 'flex', alignItems: 'center', justifyContent: 'center', color: liked ? '#ff3355' : '#6b6b8a', flexShrink: 0, opacity: likeBusy ? 0.6 : 1 }}
           >
             <Heart size={20} style={{ fill: liked ? '#ff3355' : 'none', stroke: liked ? '#ff3355' : '#6b6b8a' }} />
           </button>
