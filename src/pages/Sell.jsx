@@ -120,13 +120,16 @@ export default function Sell() {
   async function checkProductLimit() {
     if (profile?.is_premium) { setCheckingLimit(false); return }
     try {
-      const { count } = await supabase
+      const { count, error } = await supabase
         .from('products')
         .select('id', { count: 'exact', head: true })
         .eq('seller_id', user.id)
+      if (error) throw error
       setLimitReached((count ?? 0) >= 1)
-    } catch {
-      // En cas d'erreur réseau, on laisse passer
+    } catch (err) {
+      console.error('[checkProductLimit]', err)
+      toast.error('Impossible de vérifier ta limite — réessaie')
+      setLimitReached(true) // par défaut : bloquer plutôt que laisser dépasser
     } finally {
       setCheckingLimit(false)
     }
