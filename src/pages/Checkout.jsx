@@ -24,28 +24,45 @@ export default function Checkout() {
   const isValid = form.firstName && form.phone && form.address
 
   async function handleConfirm() {
+    if (loading) return
     setLoading(true)
     try {
       // Sauvegarder les commandes dans Supabase pour les vrais produits
       if (user) {
         const realItems = items.filter(i => isUUID(i.id))
-        await Promise.allSettled(
-          realItems.map(item =>
-            supabase.from('orders').insert({
-              product_id:     item.id,
-              buyer_id:       user.id,
-              seller_id:      item.seller?.id || null,
-              amount:         item.price,
-              payment_method: 'cash_on_delivery',
-              payment_status: 'pending',
-            })
+        if (realItems.length > 0) {
+          const results = await Promise.allSettled(
+            realItems.map(item =>
+              supabase.from('orders').insert({
+                product_id:     item.id,
+                buyer_id:       user.id,
+                seller_id:      item.seller?.id || null,
+                amount:         item.price,
+                payment_method: 'cash_on_delivery',
+                payment_status: 'pending',
+              })
+            )
           )
-        )
+          const succeeded = results.filter(r => r.status === 'fulfilled' && !r.value?.error).length
+          if (succeeded === 0) {
+            results.forEach(r => {
+              if (r.status === 'rejected') console.error('[order insert]', r.reason)
+              else if (r.value?.error) console.error('[order insert]', r.value.error)
+            })
+            toast.error('Aucune commande n\'a pu être enregistrée. Réessaie.')
+            setLoading(false)
+            return
+          }
+          if (succeeded < realItems.length) {
+            toast(`${succeeded}/${realItems.length} commande(s) enregistrée(s)`, { icon: '⚠️' })
+          }
+        }
       }
       clearCart()
       toast.success('Commande confirmée !')
       navigate('/paiement-succes')
-    } catch {
+    } catch (err) {
+      console.error('[checkout]', err)
       toast.error('Erreur lors de la confirmation')
     } finally {
       setLoading(false)

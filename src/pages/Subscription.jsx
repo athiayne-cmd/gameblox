@@ -35,6 +35,7 @@ export default function Subscription() {
   }, [profile?.phone])
 
   async function handleSubscribe() {
+    if (loading) return
     if (!user) {
       toast.error('Connecte-toi d\'abord.')
       navigate('/connexion')

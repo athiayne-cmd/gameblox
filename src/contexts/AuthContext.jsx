@@ -80,12 +80,16 @@ export function AuthProvider({ children }) {
           const { error: uploadError } = await supabase.storage
             .from('avatars')
             .upload(path, avatarFile, { upsert: true })
-          if (!uploadError) {
+          if (uploadError) {
+            console.error('[avatar upload]', uploadError)
+            toast.error('Photo de profil non envoyée — tu pourras la rajouter plus tard.')
+          } else {
             const { data: urlData } = supabase.storage.from('avatars').getPublicUrl(path)
             avatarUrl = urlData.publicUrl
           }
-        } catch {
-          // avatar upload failed silently — profile created without photo
+        } catch (err) {
+          console.error('[avatar upload]', err)
+          toast.error('Photo de profil non envoyée — tu pourras la rajouter plus tard.')
         }
       }
 

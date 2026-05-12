@@ -146,6 +146,12 @@ export default function Sell() {
   }
 
   async function publier() {
+    if (publishing) return
+    if (!user?.id) {
+      toast.error('Session expirée. Reconnecte-toi.')
+      navigate('/connexion')
+      return
+    }
     setPublishing(true)
     const newImages = form.images.filter(i => i.file)
     const total     = newImages.length + (form.videoFile ? 1 : 0)
